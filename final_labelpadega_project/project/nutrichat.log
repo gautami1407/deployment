@@ -1,0 +1,71 @@
+2025-03-02 19:59:41,676 - __main__ - INFO - Gemini API configured successfully
+2025-03-02 20:04:10,226 - __main__ - INFO - Gemini API configured successfully
+2025-03-02 21:39:15,295 - __main__ - INFO - Gemini API configured successfully
+2025-03-02 22:54:24,291 - __main__ - INFO - Gemini API configured successfully
+2025-03-02 22:54:47,866 - __main__ - INFO - Gemini API configured successfully
+2025-03-02 22:54:47,899 - __main__ - INFO - Sending prompt to Gemini AI: What's the importance of meal timing?...
+2025-03-02 22:54:54,059 - __main__ - INFO - Gemini API configured successfully
+2025-03-05 11:07:59,043 - __main__ - INFO - Gemini API configured successfully
+2025-03-05 11:11:30,964 - __main__ - INFO - Gemini API configured successfully
+2025-03-05 11:45:48,361 - __main__ - INFO - Gemini API configured successfully
+2025-03-05 11:48:22,699 - __main__ - INFO - Gemini API configured successfully
+2025-03-05 12:47:30,995 - __main__ - INFO - Gemini API configured successfully
+2025-03-05 12:50:41,518 - __main__ - INFO - Gemini API configured successfully
+2025-03-16 10:37:47,277 - __main__ - INFO - Gemini API configured successfully
+2025-03-16 10:37:54,796 - __main__ - INFO - Gemini API configured successfully
+2025-03-16 10:37:57,929 - __main__ - INFO - Gemini API configured successfully
+2025-03-16 10:38:38,339 - __main__ - INFO - Gemini API configured successfully
+2025-03-16 10:38:38,585 - __main__ - INFO - Gemini API configured successfully
+2025-03-16 10:38:38,600 - __main__ - INFO - Sending prompt to Gemini AI: set a best diet for one week based on my preferenc...
+2025-03-16 10:38:45,478 - __main__ - ERROR - Failed to get AI response: `st.session_state.user_input` cannot be modified after the widget with key `user_input` is instantiated.
+2025-03-16 10:38:47,054 - __main__ - INFO - Gemini API configured successfully
+2025-03-16 10:38:47,065 - __main__ - INFO - Sending prompt to Gemini AI: set a best diet for one week based on my preferenc...
+2025-03-16 10:38:55,129 - __main__ - ERROR - Failed to get AI response: `st.session_state.user_input` cannot be modified after the widget with key `user_input` is instantiated.
+2025-03-17 11:50:43,406 - __main__ - INFO - Gemini API configured successfully
+2025-03-17 11:50:43,476 - __main__ - INFO - Gemini API configured successfully
+2025-03-17 11:51:04,073 - __main__ - INFO - Gemini API configured successfully
+2025-03-17 11:51:07,509 - __main__ - INFO - Gemini API configured successfully
+2025-03-17 11:53:23,831 - __main__ - INFO - Gemini API configured successfully
+2025-03-17 11:55:49,239 - __main__ - INFO - Gemini API configured successfully
+2025-03-17 11:55:51,122 - __main__ - INFO - Gemini API configured successfully
+2025-04-25 11:10:19,107 - __main__ - INFO - Gemini API configured successfully
+2025-04-25 11:18:52,909 - __main__ - INFO - Gemini API configured successfully
+2025-04-25 11:18:53,699 - __main__ - INFO - Gemini API configured successfully
+2025-04-25 11:18:53,733 - __main__ - INFO - Sending prompt to Gemini AI: set me a meal diet for one week...
+2025-04-25 11:19:00,280 - __main__ - ERROR - Failed to get AI response: `st.session_state.user_input` cannot be modified after the widget with key `user_input` is instantiated.
+2025-04-25 11:19:02,520 - __main__ - INFO - Gemini API configured successfully
+2025-04-25 11:19:02,538 - __main__ - INFO - Sending prompt to Gemini AI: set me a meal diet for one week...
+2025-04-25 11:19:09,914 - __main__ - ERROR - Failed to get AI response: `st.session_state.user_input` cannot be modified after the widget with key `user_input` is instantiated.
+2025-04-25 12:25:05,653 - __main__ - INFO - Gemini API configured successfully
+2025-04-25 12:48:07,814 - __main__ - INFO - Gemini API configured successfully
+2025-04-25 13:01:43,113 - asyncio - ERROR - Task exception was never retrieved
+future: <Task finished name='Task-2980' coro=<WebSocketProtocol13.write_message.<locals>.wrapper() done, defined at C:\Users\N.SIRISHA\anaconda3\Lib\site-packages\tornado\websocket.py:1086> exception=WebSocketClosedError()>
+Traceback (most recent call last):
+  File "C:\Users\N.SIRISHA\anaconda3\Lib\site-packages\tornado\websocket.py", line 1088, in wrapper
+    await fut
+tornado.iostream.StreamClosedError: Stream is closed
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\N.SIRISHA\anaconda3\Lib\site-packages\tornado\websocket.py", line 1090, in wrapper
+    raise WebSocketClosedError()
+tornado.websocket.WebSocketClosedError
+2025-04-25 13:01:45,912 - __main__ - INFO - Gemini API configured successfully
+2025-04-25 13:31:47,822 - __main__ - INFO - Gemini API configured successfully
+2025-04-25 13:55:21,464 - __main__ - INFO - Gemini API configured successfully
+2025-04-25 15:01:52,020 - __main__ - INFO - Gemini API configured successfully
+2025-08-15 12:37:31,198 - __main__ - INFO - Gemini API configured successfully
+2025-11-30 23:50:28,402 - __main__ - INFO - Gemini API configured successfully
+2025-11-30 23:51:05,915 - __main__ - INFO - Gemini API configured successfully
+2025-11-30 23:51:09,002 - __main__ - INFO - Gemini API configured successfully
+2025-11-30 23:51:24,087 - __main__ - INFO - Gemini API configured successfully
+2025-11-30 23:51:24,473 - __main__ - INFO - Gemini API configured successfully
+2025-11-30 23:51:24,488 - __main__ - INFO - Sending prompt to Gemini AI: suggest me the healthy diet...
+2025-11-30 23:51:38,558 - __main__ - ERROR - Failed to get AI response: `st.session_state.user_input` cannot be modified after the widget with key `user_input` is instantiated.
+2025-11-30 23:51:40,973 - __main__ - INFO - Gemini API configured successfully
+2025-11-30 23:51:40,992 - __main__ - INFO - Sending prompt to Gemini AI: suggest me the healthy diet...
+2025-11-30 23:51:58,602 - __main__ - ERROR - Failed to get AI response: `st.session_state.user_input` cannot be modified after the widget with key `user_input` is instantiated.
+2025-11-30 23:52:06,181 - __main__ - INFO - Gemini API configured successfully
+2025-11-30 23:52:06,231 - __main__ - INFO - Sending prompt to Gemini AI: What's the importance of meal timing?...
+2025-11-30 23:52:20,147 - __main__ - ERROR - Application error: module 'streamlit' has no attribute 'experimental_rerun'

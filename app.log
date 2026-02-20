@@ -1,0 +1,76 @@
+2026-02-20 14:19:07,917 - INFO - Gemini API configured successfully
+2026-02-20 14:19:07,918 - INFO - Gemini API configured successfully
+2026-02-20 14:19:20,596 - INFO - Gemini API configured successfully
+2026-02-20 14:19:23,180 - INFO - Gemini API configured successfully
+2026-02-20 14:19:23,282 - ERROR - Image analysis error: cannot write mode RGBA as JPEG
+2026-02-20 14:19:25,674 - INFO - Gemini API configured successfully
+2026-02-20 14:19:25,776 - ERROR - Image analysis error: cannot write mode RGBA as JPEG
+2026-02-20 14:19:27,800 - INFO - Gemini API configured successfully
+2026-02-20 14:19:27,908 - ERROR - Image analysis error: cannot write mode RGBA as JPEG
+2026-02-20 14:19:29,715 - INFO - Gemini API configured successfully
+2026-02-20 14:19:29,811 - ERROR - Image analysis error: cannot write mode RGBA as JPEG
+2026-02-20 14:19:30,938 - INFO - Gemini API configured successfully
+2026-02-20 14:19:31,031 - ERROR - Image analysis error: cannot write mode RGBA as JPEG
+2026-02-20 14:19:31,303 - INFO - Gemini API configured successfully
+2026-02-20 14:19:31,401 - ERROR - Image analysis error: cannot write mode RGBA as JPEG
+2026-02-20 14:19:31,655 - INFO - Gemini API configured successfully
+2026-02-20 14:19:31,748 - ERROR - Image analysis error: cannot write mode RGBA as JPEG
+2026-02-20 14:21:26,474 - INFO - Gemini API configured successfully
+2026-02-20 14:23:40,862 - INFO - Gemini API configured successfully
+2026-02-20 14:23:52,191 - INFO - Gemini API configured successfully
+2026-02-20 14:23:55,134 - INFO - Gemini API configured successfully
+2026-02-20 14:23:55,272 - ERROR - Image analysis error: cannot write mode RGBA as JPEG
+2026-02-20 14:23:59,206 - INFO - Gemini API configured successfully
+2026-02-20 14:23:59,319 - ERROR - Image analysis error: cannot write mode RGBA as JPEG
+2026-02-20 14:29:39,311 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 14:29:49,256 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 14:29:54,764 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 14:29:54,918 - ERROR - Image analysis error: cannot write mode RGBA as JPEG
+2026-02-20 14:30:03,059 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 14:30:08,130 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 14:30:14,269 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 14:30:17,505 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 14:30:20,406 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 14:30:25,897 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 14:30:29,780 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 14:30:29,897 - ERROR - Image analysis error: cannot write mode RGBA as JPEG
+2026-02-20 14:32:00,501 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 14:32:09,900 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 14:32:14,772 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 14:32:15,350 - ERROR - Gemini API error: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+, locale: "en-US"
+message: "API key not valid. Please pass a valid API key."
+]
+2026-02-20 14:32:45,249 - INFO - Gemini API configured successfully with model: gemini-1.5-flash
+2026-02-20 14:32:55,151 - INFO - Gemini API configured successfully with model: gemini-1.5-flash
+2026-02-20 14:32:57,572 - INFO - Gemini API configured successfully with model: gemini-1.5-flash
+2026-02-20 14:32:58,396 - ERROR - Gemini API error: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+, locale: "en-US"
+message: "API key not valid. Please pass a valid API key."
+]
+2026-02-20 14:39:01,341 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 14:39:10,666 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 14:39:13,621 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 14:40:02,008 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 14:40:13,181 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 14:40:15,910 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 14:40:32,682 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 14:40:39,471 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 14:40:44,420 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 14:40:47,847 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 15:20:09,118 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 15:20:19,478 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 15:20:22,090 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 15:20:56,300 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 15:20:58,531 - INFO - Gemini API configured successfully with model: gemini-2.5-flash
+2026-02-20 15:21:51,907 - INFO - Gemini API configured successfully with model: gemini-2.5-flash

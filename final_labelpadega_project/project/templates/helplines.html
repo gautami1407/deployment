@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Safety Helpline | Food Label Analyzer</title>
+    <style>
+        :root {
+            --primary-color: #059669;
+            --primary-light: #10b981;
+            --primary-lighter: #d1fae5;
+            --white: #ffffff;
+            --light-gray: #f9fafb;
+            --gray: #e5e7eb;
+            --dark-gray: #4b5563;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-gray);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 1.5rem 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .page-description {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            padding: 3rem 0;
+        }
+
+        .help-section {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 1rem 1.5rem;
+            font-size: 1.4rem;
+        }
+
+        .section-content {
+            padding: 1.5rem;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .contact-card {
+            background-color: var(--primary-lighter);
+            border-radius: 6px;
+            padding: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-title i {
+            margin-right: 10px;
+        }
+
+        .contact-info {
+            margin: 0.8rem 0;
+        }
+
+        .contact-label {
+            font-weight: 600;
+            color: var(--dark-gray);
+        }
+
+        .contact-value {
+            margin-top: 0.2rem;
+        }
+
+        .contact-value a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .contact-value a:hover {
+            color: var(--primary-light);
+            text-decoration: underline;
+        }
+
+        .steps-container {
+            counter-reset: step;
+        }
+
+        .step {
+            position: relative;
+            padding-left: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .step:before {
+            counter-increment: step;
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background-color: var(--primary-color);
+            color: var(--white);
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .step-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .accordion {
+            margin-top: 1rem;
+        }
+
+        .accordion-item {
+            border: 1px solid var(--gray);
+            border-radius: 6px;
+            margin-bottom: 0.8rem;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            background-color: var(--primary-lighter);
+            padding: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .accordion-header:after {
+            content: '+';
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .accordion-content {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background-color: var(--white);
+        }
+
+        .accordion-content-inner {
+            padding: 1.5rem;
+        }
+
+        input[type="checkbox"] {
+            display: none;
+        }
+
+        input[type="checkbox"]:checked + .accordion-header:after {
+            content: '−';
+        }
+
+        input[type="checkbox"]:checked + .accordion-header + .accordion-content {
+            max-height: 500px;
+        }
+
+        .cta-section {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 3rem 0;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .cta-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-description {
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            font-size: 1.1rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: var(--white);
+            color: var(--primary-color);
+            font-weight: 600;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .cta-button:hover {
+            background-color: var(--primary-lighter);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        footer {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        .footer-link {
+            color: var(--white);
+            text-decoration: none;
+            margin: 0 1rem;
+            transition: color 0.3s;
+        }
+
+        .footer-link:hover {
+            color: var(--primary-lighter);
+        }
+
+        @media (max-width: 768px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="page-title">Food Safety Helpline</h1>
+            <p class="page-description">Access contact information, report food safety violations, and learn about your rights as a consumer.</p>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <div class="container">
+            <div class="help-section">
+                <h2 class="section-header">Emergency Contacts</h2>
+                <div class="section-content">
+                    <p>Use these numbers for immediate assistance with food safety concerns:</p>
+                    <div class="contact-grid">
+                        <div class="contact-card">
+                            <h3 class="card-title">FDA Food Safety Hotline</h3>
+                            <div class="contact-info">
+                                <div class="contact-label">Phone:</div>
+                                <div class="contact-value"><a href="tel:18887234769">1-888-SAFEFOOD (1-888-723-4769)</a></div>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-label">Hours:</div>
+                                <div class="contact-value">Mon-Fri, 10am-4pm ET</div>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-label">For:</div>
+                                <div class="contact-value">Immediate food safety concerns, contamination issues</div>
+                            </div>
+                        </div>
+
+                        <div class="contact-card">
+                            <h3 class="card-title">USDA Meat & Poultry Hotline</h3>
+                            <div class="contact-info">
+                                <div class="contact-label">Phone:</div>
+                                <div class="contact-value"><a href="tel:18885747848">1-888-MPHotline (1-888-674-6854)</a></div>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-label">Hours:</div>
+                                <div class="contact-value">Mon-Fri, 10am-6pm ET</div>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-label">For:</div>
+                                <div class="contact-value">Meat, poultry, and egg product safety concerns</div>
+                            </div>
+                        </div>
+
+                        <div class="contact-card">
+                            <h3 class="card-title">Poison Control Center</h3>
+                            <div class="contact-info">
+                                <div class="contact-label">Phone:</div>
+                                <div class="contact-value"><a href="tel:18002221222">1-800-222-1222</a></div>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-label">Hours:</div>
+                                <div class="contact-value">24/7 Emergency Service</div>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-label">For:</div>
+                                <div class="contact-value">If you suspect food poisoning or ingestion of harmful substances</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="help-section">
+                <h2 class="section-header">Report Food Labeling Violations</h2>
+                <div class="section-content">
+                    <p>If you've found mislabeled products or suspect food fraud, use these resources:</p>
+                    <div class="contact-grid">
+                        <div class="contact-card">
+                            <h3 class="card-title">FDA Report a Problem</h3>
+                            <div class="contact-info">
+                                <div class="contact-label">Online:</div>
+                                <div class="contact-value"><a href="https://www.fda.gov/safety/report-problem-fda" target="_blank">FDA Consumer Complaint Coordinator</a></div>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-label">Phone:</div>
+                                <div class="contact-value"><a href="tel:18003321088">1-800-332-1088</a></div>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-label">For:</div>
+                                <div class="contact-value">Reporting misleading food labels, allergen mislabeling, nutritional content concerns</div>
+                            </div>
+                        </div>
+
+                        <div class="contact-card">
+                            <h3 class="card-title">USDA Food Safety and Inspection Service</h3>
+                            <div class="contact-info">
+                                <div class="contact-label">Online:</div>
+                                <div class="contact-value"><a href="https://www.fsis.usda.gov/recalls" target="_blank">Report Concerns</a></div>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-label">Email:</div>
+                                <div class="contact-value"><a href="mailto:MPHotline.fsis@usda.gov">MPHotline.fsis@usda.gov</a></div>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-label">For:</div>
+                                <div class="contact-value">Reporting issues with meat, poultry, and egg product labeling</div>
+                            </div>
+                        </div>
+
+                        <div class="contact-card">
+                            <h3 class="card-title">Food Fraud Reporting</h3>
+                            <div class="contact-info">
+                                <div class="contact-label">Email:</div>
+                                <div class="contact-value"><a href="mailto:foodfraud@foodprotection.org">foodfraud@foodprotection.org</a></div>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-label">Online:</div>
+                                <div class="contact-value"><a href="https://www.foodprotection.org/resources/food-fraud/" target="_blank">Food Fraud Database</a></div>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-label">For:</div>
+                                <div class="contact-value">Reporting suspected counterfeit or fraudulent food products</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="help-section">
+                <h2 class="section-header">Consumer Rights and Legal Support</h2>
+                <div class="section-content">
+                    <p>For legal assistance or filing a complaint about food products:</p>
+                    <div class="contact-grid">
+                        <div class="contact-card">
+                            <h3 class="card-title">Consumer Product Safety Commission</h3>
+                            <div class="contact-info">
+                                <div class="contact-label">Phone:</div>
+                                <div class="contact-value"><a href="tel:18006382772">1-800-638-2772</a></div>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-label">Online:</div>
+                                <div class="contact-value"><a href="https://www.saferproducts.gov" target="_blank">File a Report</a></div>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-label">For:</div>
+                                <div class="contact-value">Reporting unsafe consumer products including food containers and packaging</div>
+                            </div>
+                        </div>
+
+                        <div class="contact-card">
+                            <h3 class="card-title">Federal Trade Commission</h3>
+                            <div class="contact-info">
+                                <div class="contact-label">Phone:</div>
+                                <div class="contact-value"><a href="tel:18773824357">1-877-FTC-HELP (1-877-382-4357)</a></div>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-label">Online:</div>
+                                <div class="contact-value"><a href="https://reportfraud.ftc.gov" target="_blank">Report Fraud</a></div>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-label">For:</div>
+                                <div class="contact-value">Reporting false advertising claims on food products</div>
+                            </div>
+                        </div>
+
+                        <div class="contact-card">
+                            <h3 class="card-title">Consumer Legal Aid</h3>
+                            <div class="contact-info">
+                                <div class="contact-label">Phone:</div>
+                                <div class="contact-value"><a href="tel:18008887743">1-800-888-7743</a></div>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-label">Email:</div>
+                                <div class="contact-value"><a href="mailto:legalaid@consumerprotection.org">legalaid@consumerprotection.org</a></div>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-label">For:</div>
+                                <div class="contact-value">Legal assistance for consumer protection issues related to food products</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="help-section">
+                <h2 class="section-header">How to Report a Food Safety Issue</h2>
+                <div class="section-content">
+                    <div class="steps-container">
+                        <div class="step">
+                            <div class="step-title">Document the Product</div>
+                            <p>Take clear photos of the product, including the label, batch number, expiration date, and any visible issues with the product. Keep the original packaging.</p>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-title">Preserve Evidence</div>
+                            <p>If possible, store the product in a sealed container in the refrigerator or freezer to preserve it for testing if needed.</p>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-title">Contact the Manufacturer</div>
+                            <p>Reach out to the manufacturer using the contact information on the package. Document this communication.</p>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-title">Report to Regulatory Agencies</div>
+                            <p>Use the appropriate contact information above to report to the FDA, USDA, or other relevant authority.</p>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-title">Seek Medical Attention if Needed</div>
+                            <p>If you've consumed the product and experienced health issues, see a healthcare provider immediately.</p>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-title">Follow Up</div>
+                            <p>Keep records of all communications and follow up with the agencies if you don't receive a response.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="help-section">
+                <h2 class="section-header">Frequently Asked Questions</h2>
+                <div class="section-content">
+                    <div class="accordion">
+                        <div class="accordion-item">
+                            <input type="checkbox" id="accordion1" class="accordion-toggle">
+                            <label for="accordion1" class="accordion-header">What should I do if I found a counterfeit food product?</label>
+                            <div class="accordion-content">
+                                <div class="accordion-content-inner">
+                                    <p>If you suspect a counterfeit food product:</p>
+                                    <ol>
+                                        <li>Do not consume the product</li>
+                                        <li>Document all details including where and when you purchased it</li>
+                                        <li>Report to the FDA using the Food Safety Hotline at 1-888-SAFEFOOD</li>
+                                        <li>Contact the legitimate manufacturer to report the counterfeit</li>
+                                        <li>Report to your local health department</li>
+                                        <li>If you've already consumed the product and feel ill, seek medical attention immediately</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <input type="checkbox" id="accordion2" class="accordion-toggle">
+                            <label for="accordion2" class="accordion-header">How do I file a legal complaint about false advertising on food labels?</label>
+                            <div class="accordion-content">
+                                <div class="accordion-content-inner">
+                                    <p>To file a complaint about false advertising on food labels:</p>
+                                    <ol>
+                                        <li>Gather evidence of the false claim (photos, packaging, receipts)</li>
+                                        <li>Report to the Federal Trade Commission (FTC) at 1-877-FTC-HELP or online at reportfraud.ftc.gov</li>
+                                        <li>File a complaint with your state's Attorney General's office</li>
+                                        <li>Consider contacting a consumer protection attorney if you've suffered damages</li>
+                                        <li>For class action potential, websites like classaction.org can help connect you with relevant legal resources</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <input type="checkbox" id="accordion3" class="accordion-toggle">
+                            <label for="accordion3" class="accordion-header">What are the most common food labeling violations?</label>
+                            <div class="accordion-content">
+                                <div class="accordion-content-inner">
+                                    <p>Common food labeling violations include:</p>
+                                    <ul>
+                                        <li><strong>Undeclared allergens</strong> - Not listing major allergens like nuts, dairy, or gluten</li>
+                                        <li><strong>Nutritional misrepresentation</strong> - Inaccurate calorie counts or nutrient amounts</li>
+                                        <li><strong>False health claims</strong> - Unsubstantiated "reduces heart disease" or similar claims</li>
+                                        <li><strong>Misleading ingredient lists</strong> - Not listing ingredients in order of predominance</li>
+                                        <li><strong>"Natural" claims</strong> - Using "natural" when products contain synthetic ingredients</li>
+                                        <li><strong>Country of origin fraud</strong> - Misrepresenting where food was grown or produced</li>
+                                        <li><strong>Organic mislabeling</strong> - Using the term "organic" without certification</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <input type="checkbox" id="accordion4" class="accordion-toggle">
+                            <label for="accordion4" class="accordion-header">How can I check if a food recall has been issued?</label>
+                            <div class="accordion-content">
+                                <div class="accordion-content-inner">
+                                    <p>To check for food recalls:</p>
+                                    <ul>
+                                        <li>Visit <a href="https://www.foodsafety.gov/recalls-and-outbreaks" target="_blank">FoodSafety.gov</a> for a comprehensive list of recalls</li>
+                                        <li>Check the FDA's recall list at <a href="https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts" target="_blank">FDA Recalls</a></li>
+                                        <li>For meat, poultry, and egg products, visit the <a href="https://www.fsis.usda.gov/recalls" target="_blank">USDA FSIS Recalls</a></li>
+                                        <li>Sign up for email alerts from <a href="https://www.foodsafety.gov/keep-food-safe/food-safety-alerts" target="_blank">FoodSafety.gov</a></li>
+                                        <li>Download the <a href="https://www.foodsafety.gov/recalls-and-outbreaks" target="_blank">FoodKeeper App</a> which includes recall notifications</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <input type="checkbox" id="accordion5" class="accordion-toggle">
+                            <label for="accordion5" class="accordion-header">What information should I have ready when reporting a food safety issue?</label>
+                            <div class="accordion-content">
+                                <div class="accordion-content-inner">
+                                    <p>When reporting a food safety issue, have the following information ready:</p>
+                                    <ul>
+                                        <li>Product name and brand</li>
+                                        <li>Package size and type</li>
+                                        <li>Manufacturing codes (usually found on the package)</li>
+                                        <li>Expiration or "best by" date</li>
+                                        <li>UPC code (barcode number)</li>
+                                        <li>Where and when you purchased the product</li>
+                                        <li>Nature of the complaint or issue you observed</li>
+                                        <li>Whether you or others consumed the product</li>
+                                        <li>Any symptoms experienced</li>
+                                        <li>Photos of the product and labeling if available</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="cta-section">
+    <div class="container">
+        <h2 class="cta-title">Food Help, Anytime You Need</h2>
+        <p class="cta-description">Get quick guidance on food safety, nutrition, and labeling.</p>
+    </div>
+</section>
+
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Food Label Analyzer. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Home</a>
+                <a href="#" class="footer-link">About Us</a>
+                <a href="#" class="footer-link">Guidelines</a>
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple script to improve accordion functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const accordionItems = document.querySelectorAll('.accordion-toggle');
+
+            accordionItems.forEach(item => {
+                item.addEventListener('change', function() {
+                    // Close all other accordions when one is opened
+                    if (this.checked) {
+                        accordionItems.forEach(otherItem => {
+                            if (otherItem !== this) {
+                                otherItem.checked = false;
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

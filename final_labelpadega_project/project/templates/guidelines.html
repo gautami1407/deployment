@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Guidelines & Regulations | Food Label Analyzer</title>
+    <style>
+      :root {
+    --primary-color: #059669;  /* Emerald Green (Tailwind green-600) */
+    --secondary-color: #027353;  /* Deep Teal Green (Darker shade of primary) */
+    --accent-color: #38a169;  /* Fresh Green (Tailwind green-500) */
+    --text-color: #1b5e20;  /* Dark Green (Tailwind green-900) */
+    --light-bg: #e8f5e9;  /* Soft Green Background (Tailwind green-100) */
+    --card-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);  /* Emerald Green shadow */
+}
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            color: var(--text-color);
+            background-color: var(--light-bg);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.5;
+        }
+
+        .container {
+            width: 85%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .breadcrumbs {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .breadcrumbs a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumbs a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        main {
+            padding: 3rem 0;
+        }
+
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 1rem;
+        }
+
+        .nav-tab {
+            padding: 0.75rem 1.5rem;
+            background-color: white;
+            border-radius: 5px 5px 0 0;
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: 1px solid #ddd;
+            border-bottom: none;
+        }
+
+        .nav-tab:hover, .nav-tab.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent-color);
+            display: inline-block;
+        }
+
+        .card-content {
+            margin-bottom: 1.5rem;
+        }
+
+        .fssai-logo {
+            display: block;
+            margin: 1rem auto;
+            max-width: 200px;
+            border-radius: 5px;
+        }
+
+        .icon-list {
+            list-style-type: none;
+        }
+
+        .icon-list li {
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .icon-list li::before {
+            content: "✓";
+            color: var(--primary-color);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .info-item {
+            background-color: rgba(76, 175, 80, 0.1);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .info-item h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        table th, table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        table tr:nth-child(even) {
+            background-color: rgba(76, 175, 80, 0.05);
+        }
+
+        .accordion {
+            margin-bottom: 1rem;
+        }
+
+        .accordion-header {
+            background-color: rgba(76, 175, 80, 0.1);
+            padding: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+            position: relative;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .accordion-header:hover {
+            background-color: rgba(76, 175, 80, 0.2);
+        }
+
+        .accordion-header::after {
+            content: "+";
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+        }
+
+        .accordion-content {
+            padding: 0 1rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background-color: white;
+            border-radius: 0 0 5px 5px;
+        }
+
+        .accordion-content-inner {
+            padding: 1rem 0;
+        }
+
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .footer-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: var(--accent-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .back-to-top:hover {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-tabs {
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+            }
+
+            .nav-tab {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            header, footer, .nav-tabs, .back-to-top {
+                display: none;
+            }
+
+            body {
+                background-color: white;
+            }
+
+            .card {
+                box-shadow: none;
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="hero-pattern"></div>
+        <div class="container">
+            <h1 class="page-title">Food Guidelines & Regulations</h1>
+            <p class="subtitle">Essential information about food safety, labeling, and certification standards</p>
+            <div class="breadcrumbs">
+                <a href="index.html">Home</a> > Guidelines
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="nav-tabs">
+            <a href="#food-laws" class="nav-tab active">Food Laws</a>
+            <a href="#fssai" class="nav-tab">FSSAI Certification</a>
+            <a href="#labeling" class="nav-tab">Labeling Requirements</a>
+            <a href="#additives" class="nav-tab">Food Additives</a>
+            <a href="#standards" class="nav-tab">Quality Standards</a>
+            <a href="#compliance" class="nav-tab">Compliance Guide</a>
+        </div>
+
+        <section id="food-laws" class="card">
+            <h2 class="card-title">Food Safety Laws & Regulations</h2>
+            <div class="card-content">
+                <p>Food safety laws and regulations are established to ensure that food products are safe, properly labeled, and comply with all required standards. These legal frameworks protect consumers and provide guidelines for food manufacturers and distributors.</p>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <h3>Food Safety and Standards Act, 2006</h3>
+                        <p>The primary law governing food safety in India, establishing FSSAI and consolidating various food safety laws.</p>
+                    </div>
+                    <div class="info-item">
+                        <h3>FDA Food Safety Modernization Act</h3>
+                        <p>Major U.S. law aimed at ensuring the food supply is safe by focusing on preventing contamination rather than responding to it.</p>
+                    </div>
+                    <div class="info-item">
+                        <h3>EU General Food Law</h3>
+                        <p>Regulation (EC) No 178/2002 laying down the general principles of food law in the European Union.</p>
+                    </div>
+                </div>
+
+                <p>These regulatory frameworks typically cover:</p>
+                <ul class="icon-list">
+                    <li>Food safety standards and requirements</li>
+                    <li>Labeling and packaging regulations</li>
+                    <li>Permitted additives and ingredients</li>
+                    <li>Import and export regulations</li>
+                    <li>Licensing and registration of food businesses</li>
+                    <li>Inspection and enforcement mechanisms</li>
+                </ul>
+
+                <h3>Additional Food Laws & Regulations</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <h3>Codex Alimentarius</h3>
+                        <p>Internationally recognized set of standards, guidelines, and codes of practice to ensure food safety and fair trade practices in the food sector.</p>
+                    </div>
+                    <div class="info-item">
+                        <h3>Food Labeling Regulations</h3>
+                        <p>Regulations that dictate the necessary information that must be present on food labels to ensure consumer safety and informed choices.</p>
+                    </div>
+                    <div class="info-item">
+                        <h3>Good Manufacturing Practices (GMP)</h3>
+                        <p>Standards that ensure products are consistently produced and controlled according to quality standards, minimizing risks involved in food production.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="fssai" class="card">
+            <h2 class="card-title">FSSAI Certification</h2>
+            <div class="card-content">
+                <img src="{{ url_for('static', filename='images/fssailogo.jpeg') }}" alt="FSSAI Logo" class="fssai-logo">
+
+
+                <p>The Food Safety and Standards Authority of India (FSSAI) is an autonomous body established under the Ministry of Health & Family Welfare, Government of India. FSSAI is responsible for protecting and promoting public health through the regulation and supervision of food safety.</p>
+
+                <h3>What is FSSAI?</h3>
+                <p>FSSAI is the food regulatory body responsible for:</p>
+                <ul class="icon-list">
+                    <li>Setting science-based standards for food items</li>
+                    <li>Regulating manufacturing, storage, distribution, sale, and import of food</li>
+                    <li>Facilitating food safety and promoting general awareness about food safety and nutrition</li>
+                    <li>Issuing licenses and certifications to food businesses</li>
+                </ul>
+
+                <h3>FSSAI Licensing Process</h3>
+                <p>The FSSAI licensing process involves:</p>
+
+                <table>
+                    <tr>
+                        <th>License Type</th>
+                        <th>Annual Turnover</th>
+                        <th>Validity</th>
+                    </tr>
+                    <tr>
+                        <td>Basic Registration</td>
+                        <td>Up to ₹12 lakhs</td>
+                        <td>5 years</td>
+                    </tr>
+                    <tr>
+                        <td>State License</td>
+                        <td>₹12 lakhs to ₹20 crores</td>
+                        <td>5 years</td>
+                    </tr>
+                    <tr>
+                        <td>Central License</td>
+                        <td>Above ₹20 crores</td>
+                        <td>5 years</td>
+                    </tr>
+                </table>
+
+                <h3>FSSAI License Number on Packaging</h3>
+                <p>All packaged food products must display the FSSAI license or registration number on their labels. This 14-digit number ensures the product meets food safety standards and is legally permitted to be sold in the market.</p>
+            </div>
+        </section>
+
+        <section id="labeling" class="card">
+            <h2 class="card-title">Food Labeling Requirements</h2>
+            <div class="card-content">
+                <p>Food labeling regulations ensure that consumers receive accurate and adequate information about the food products they purchase. These requirements vary by country but generally include:</p>
+
+                <div class="accordion">
+                    <div class="accordion-header">Mandatory Information on Food Labels</div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <ul class="icon-list">
+                                <li><strong>Product Name:</strong> The name must accurately describe the food product.</li>
+                                <li><strong>Ingredient List:</strong> All ingredients must be listed in descending order of weight.</li>
+                                <li><strong>Allergen Information:</strong> Common allergens must be highlighted or emphasized.</li>
+                                <li><strong>Net Quantity:</strong> The amount of food in the package by weight, volume, or count.</li>
+                                <li><strong>Nutritional Information:</strong> Details of calories, fats, proteins, carbohydrates, etc.</li>
+                                <li><strong>Manufacturing Date and Expiry/Best Before Date:</strong> When the product was made and until when it's safe to consume.</li>
+                                <li><strong>Name and Address of Manufacturer:</strong> Details of the company that produced the food.</li>
+                                <li><strong>Country of Origin:</strong> Where the food was produced or processed.</li>
+                                <li><strong>Instructions for Use:</strong> If specific preparation instructions are needed.</li>
+                                <li><strong>Storage Conditions:</strong> How to properly store the product.</li>
+                                <li><strong>Batch/Lot Number:</strong> For traceability purposes.</li>
+                                <li><strong>Regulatory Symbols and License Numbers:</strong> Such as FSSAI license number, vegetarian/non-vegetarian symbols, etc.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion">
+                    <div class="accordion-header">Nutritional Information Panel Requirements</div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p>The nutritional information panel typically includes:</p>
+                            <ul class="icon-list">
+                                <li>Energy value (calories)</li>
+                                <li>Amounts of protein, carbohydrate, and fat</li>
+                                <li>Amounts of saturated fat, trans fat, cholesterol, and sodium</li>
+                                <li>Amount of total sugars</li>
+                                <li>Amount of dietary fiber</li>
+                                <li>Amounts of vitamins and minerals</li>
+                                <li>Serving size and number of servings per container</li>
+                            </ul>
+                            <p>This information is typically presented per 100g/100ml and per serving.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion">
+                    <div class="accordion-header">Claims and Representations</div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p>Any claims made on food packaging (such as "low fat," "high protein," "organic," etc.) must comply with specific regulatory definitions and requirements. Misleading claims are prohibited.</p>
+
+                            <h4>Common Types of Claims:</h4>
+                            <ul class="icon-list">
+                                <li><strong>Nutrition Claims:</strong> Related to nutritional content (e.g., "low fat," "high fiber")</li>
+                                <li><strong>Health Claims:</strong> Suggesting a relationship between a food and health</li>
+                                <li><strong>Function Claims:</strong> Regarding the role of a nutrient in normal bodily functions</li>
+                                <li><strong>Disease Risk Reduction Claims:</strong> Suggesting a food reduces risk of a disease</li>
+                                                                </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="additives" class="card">
+            <h2 class="card-title">Food Additives and Ingredients Regulations</h2>
+            <div class="card-content">
+                <p>Food additives are substances added to food to preserve flavor or enhance taste, appearance, or other qualities. Strict regulations govern which additives are permitted and in what quantities.</p>
+
+                <h3>Categories of Food Additives</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <h3>Preservatives</h3>
+                        <p>Substances that prevent or inhibit spoilage caused by microbial growth or chemical changes. Examples: Sodium benzoate (E211), Potassium sorbate (E202).</p>
+                    </div>
+                    <div class="info-item">
+                        <h3>Colorants</h3>
+                        <p>Substances that add or restore color in foods. Examples: Caramel (E150), Beetroot Red (E162), Tartrazine (E102).</p>
+                    </div>
+                    <div class="info-item">
+                        <h3>Flavor Enhancers</h3>
+                        <p>Substances that enhance the existing taste or smell of food. Example: Monosodium glutamate (E621).</p>
+                    </div>
+                    <div class="info-item">
+                        <h3>Sweeteners</h3>
+                        <p>Substances used as sugar substitutes. Examples: Aspartame (E951), Sucralose (E955), Stevia (E960).</p>
+                    </div>
+                </div>
+
+                <h3>Regulation of Food Additives</h3>
+                <p>Food additives are regulated by:</p>
+                <ul class="icon-list">
+                    <li>Positive listing: Only approved additives can be used</li>
+                    <li>Maximum permitted levels for specific foods</li>
+                    <li>Requirements for purity and specification</li>
+                    <li>Mandatory labeling in the ingredients list</li>
+                </ul>
+
+                <p>The E-number system is used in the European Union to identify approved food additives. Similar systems exist in other countries and regions.</p>
+            </div>
+        </section>
+
+        <section id="standards" class="card">
+            <h2 class="card-title">Food Quality Standards</h2>
+            <div class="card-content">
+                <p>Food quality standards ensure that food products meet specific requirements related to composition, safety, and quality. These standards go beyond basic safety to address quality aspects like taste, texture, and appearance.</p>
+
+                <h3>Major Food Quality Standards and Certifications</h3>
+
+                <div class="accordion">
+                    <div class="accordion-header">HACCP (Hazard Analysis Critical Control Points)</div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p>HACCP is a systematic approach to identifying, evaluating, and controlling food safety hazards. It focuses on prevention rather than finished product inspection.</p>
+                            <p>The seven principles of HACCP are:</p>
+                            <ol>
+                                <li>Conduct a hazard analysis</li>
+                                <li>Identify critical control points</li>
+                                <li>Establish critical limits</li>
+                                <li>Establish monitoring procedures</li>
+                                <li>Establish corrective actions</li>
+                                <li>Establish verification procedures</li>
+                                <li>Establish record-keeping procedures</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion">
+                    <div class="accordion-header">ISO 22000</div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p>ISO 22000 is an international standard that specifies requirements for food safety management systems. It combines the HACCP principles with other preventive programs using a management systems approach.</p>
+                            <p>Key elements include:</p>
+                            <ul class="icon-list">
+                                <li>Interactive communication</li>
+                                <li>System management</li>
+                                <li>Prerequisite programs</li>
+                                <li>HACCP principles</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion">
+                    <div class="accordion-header">BRC Global Standard for Food Safety</div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p>The BRC Global Standard for Food Safety was developed by the British Retail Consortium to help retailers and brand owners produce food products of consistent safety and quality.</p>
+                            <p>It covers areas such as:</p>
+                            <ul class="icon-list">
+                                <li>Senior management commitment</li>
+                                <li>Food safety plan (HACCP)</li>
+                                <li>Food safety and quality management system</li>
+                                <li>Site standards</li>
+                                <li>Product control</li>
+                                <li>Process control</li>
+                                <li>Personnel</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion">
+                    <div class="accordion-header">Other Quality Standards</div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <ul class="icon-list">
+                                <li><strong>Organic Certifications:</strong> Various standards like USDA Organic, EU Organic, India Organic, etc.</li>
+                                <li><strong>Fair Trade Certification:</strong> Ensures fair prices and better working conditions for producers.</li>
+                                <li><strong>Halal and Kosher Certifications:</strong> Religious dietary standards.</li>
+                                <li><strong>Non-GMO Project Verification:</strong> Products made without genetically modified ingredients.</li>
+                                <li><strong>Gluten-Free Certification:</strong> For products safe for people with celiac disease or gluten sensitivity.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="compliance" class="card">
+            <h2 class="card-title">Compliance Guide for Food Businesses</h2>
+            <div class="card-content">
+                <p>Ensuring compliance with food regulations is essential for all food businesses. This guide outlines key steps to maintain compliance.</p>
+
+                <h3>Key Compliance Steps</h3>
+                <ul class="icon-list">
+                    <li><strong>Register/License Your Business:</strong> Obtain all necessary licenses and registrations (e.g., FSSAI license in India, FDA registration in the US).</li>
+                    <li><strong>Implement Food Safety Management System:</strong> Adopt HACCP or other recognized food safety systems.</li>
+                    <li><strong>Ensure Proper Labeling:</strong> Comply with all mandatory labeling requirements.</li>
+                    <li><strong>Train Employees:</strong> Provide regular food safety training to all staff.</li>
+                    <li><strong>Maintain Records:</strong> Keep detailed records of suppliers, production processes, and distribution.</li>
+                    <li><strong>Conduct Regular Testing:</strong> Test products for contaminants, pathogens, and compliance with standards.</li>
+                    <li><strong>Handle Complaints:</strong> Establish a system for addressing consumer complaints and product recalls.</li>
+                    <li><strong>Stay Updated:</strong> Keep abreast of changes in regulations and standards.</li>
+                </ul>
+
+                <h3>Compliance Checklist for New Products</h3>
+                <table>
+                    <tr>
+                        <th>Compliance Area</th>
+                        <th>Key Requirements</th>
+                    </tr>
+                    <tr>
+                        <td>Product Composition</td>
+                        <td>
+                            - Complies with product standards<br>
+                            - Uses only approved additives<br>
+                            - Meets compositional requirements
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Packaging</td>
+                        <td>
+                            - Food-grade materials<br>
+                            - Migration testing if needed<br>
+                            - Environmental compliance
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Labeling</td>
+                        <td>
+                            - Mandatory information<br>
+                            - Accurate claims<br>
+                            - Allergen information
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Shelf Life</td>
+                        <td>
+                            - Validated stability studies<br>
+                            - Appropriate date marking<br>
+                            - Storage instructions
+                        </td>
+                    </tr>
+                </table>
+
+                <h3>Penalties for Non-Compliance</h3>
+                <p>Non-compliance with food regulations can result in serious consequences, including:</p>
+                <ul class="icon-list">
+                    <li>Financial penalties and fines</li>
+                    <li>Product recalls</li>
+                    <li>Suspension or revocation of licenses</li>
+                    <li>Damage to brand reputation</li>
+                    <li>Legal proceedings and imprisonment in severe cases</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Food Label Analyzer. All Rights Reserved.</p>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="about.html">About Us</a>
+                <a href="contact.html">Contact</a>
+                <a href="privacy.html">Privacy Policy</a>
+            </div>
+        </div>
+    </footer>
+
+    <a href="#" class="back-to-top">↑</a>
+
+    <script>
+        // Toggle accordion
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                    this.style.borderRadius = '5px';
+                    this.classList.remove('active');
+                    this.innerHTML = this.innerHTML.replace('−', '+');
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    this.style.borderRadius = '5px 5px 0 0';
+                    this.classList.add('active');
+                    this.innerHTML = this.innerHTML.replace('+', '−');
+                }
+            });
+        });
+
+        // Smooth scroll for navigation tabs
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Remove active class from all tabs
+                document.querySelectorAll('.nav-tab').forEach(t => {
+                    t.classList.remove('active');
+                });
+
+                // Add active class to clicked tab
+                this.classList.add('active');
+
+                // Smooth scroll to section
+                const targetId = this.getAttribute('href').substring(1);
+                const targetSection = document.getElementById(targetId);
+
+                window.scrollTo({
+                    top: targetSection.offsetTop - 100,
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Back to top button
+        const backToTopButton = document.querySelector('.back-to-top');
+
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.style.display = 'flex';
+            } else {
+                backToTopButton.style.display = 'none';
+            }
+        });
+
+        backToTopButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+</body>
+</html>

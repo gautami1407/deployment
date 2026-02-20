@@ -1,0 +1,10 @@
+flask
+streamlit
+google-generativeai
+pillow
+pandas
+plotly
+streamlit-lottie
+pycountry
+requests
+gunicorn

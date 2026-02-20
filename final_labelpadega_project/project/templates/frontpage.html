@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Label Padega Sabh - Your Food Detective</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.28.0/feather.min.js"></script>
+  <style>
+    /* Custom styles */
+    .news-ticker {
+      white-space: nowrap;
+      animation: ticker 20s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes ticker {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    .blog-card {
+      transition: transform 0.3s ease;
+    }
+
+    .blog-card:hover {
+      transform: translateY(-10px);
+    }
+
+    .food-fact-card {
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .food-fact-card:hover {
+      transform: scale(1.05);
+    }
+
+    .video-recommendation {
+      border-radius: 0.75rem;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .video-recommendation:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .chatbot-popup {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .dark-mode {
+      background-color: #121212;
+      color: white;
+    }
+
+    .toggle-dark-mode {
+      cursor: pointer;
+    }
+
+    /* Animation for scanner line */
+    @keyframes scanAnimation {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(350px); }
+    }
+
+    .scan-line {
+      animation: scanAnimation 2s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-green-50 to-white">
+
+
+  <!-- News ticker -->
+  <div class="bg-green-600 text-white py-2 overflow-hidden relative">
+    <div class="news-ticker whitespace-nowrap animate-marquee">
+        <span class="px-4">Did you know? 60% of our diet should consist of fresh fruits and vegetables!</span>
+        <span class="px-4">Breaking: New food labeling standards to be implemented nationwide next month</span>
+        <span class="px-4">Tip: Always check for added sugars when buying packaged foods</span>
+        <span class="px-4">Study shows people who read food labels tend to have healthier diets</span>
+        <span class="px-4">Did you know? Whole grains are a great source of fiber and essential nutrients</span>
+        <span class="px-4">Breaking: New research shows a plant-based diet can reduce heart disease risk</span>
+        <span class="px-4">Tip: Opt for lean proteins like chicken, fish, and beans to maintain a healthy diet</span>
+        <span class="px-4">Did you know? The recommended daily intake of water is 8 glasses to stay hydrated</span>
+        <span class="px-4">Breaking: Experts recommend reducing sodium intake to lower blood pressure</span>
+        <span class="px-4">Tip: Choose foods rich in omega-3 fatty acids for improved brain health</span>
+    </div>
+</div>
+
+<style>
+@keyframes marquee {
+  from { transform: translateX(100%); }
+  to { transform: translateX(-100%); }
+}
+
+.animate-marquee {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 40s linear infinite; /* Adjust speed here */
+}
+</style>
+
+
+  <!-- Hero Section -->
+  <div class="absolute top-0 right-0 w-64 h-64 bg-green-100 rounded-full -translate-y-1/2 translate-x-1/2 opacity-50 blur-3xl"></div>
+
+  <header class="container mx-auto px-4 py-16 relative">
+    <nav class="flex justify-between items-center mb-16">
+      <div class="flex items-center gap-4">
+    <i data-feather="leaf" class="w-0 h-12 text-green-1000"></i>
+    <h1 class="text-6xl font-extrabold text-green-900 font-serif tracking-wide">
+        Label Padega Sabh
+    </h1>
+</div>
+
+      <div class="flex items-center space-x-6">
+  <div class="flex items-center space-x-6">
+    <a href="{{ url_for('about') }}">
+      <button class="bg-green-600 text-white text-lg px-6 py-3 rounded-full hover:bg-green-700 shadow-lg shadow-green-200">
+        About
+      </button>
+    </a>
+  </div>
+  <div class="relative group">
+    <a href="{{ url_for('guidelines') }}">
+      <button class="bg-green-600 text-white text-lg px-6 py-3 rounded-full hover:bg-green-700 shadow-lg shadow-green-200">
+        Guidelines
+      </button>
+    </a>
+  </div>
+  <div class="relative group">
+    <a href="{{ url_for('helplines') }}">
+      <button class="bg-green-600 text-white text-lg px-6 py-3 rounded-full hover:bg-green-700 shadow-lg shadow-green-200">
+        Helpline Numbers
+      </button>
+    </a>
+  </div>
+</div>
+
+    </nav>
+
+    <div class="flex flex-col md:flex-row items-center gap-12">
+      <div class="flex-1">
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          Make <span class="text-green-600">Healthier</span> Food Choices with AI
+        </h2>
+        <p class="text-xl text-gray-600 mb-8">
+          Your personal food detective! Scan labels, discover ingredients, and make informed decisions for a healthier lifestyle.
+        </p>
+        <div class="flex gap-4">
+          <button id="startScanning" class="bg-green-600 text-white px-8 py-4 rounded-full hover:bg-green-700 shadow-lg shadow-green-200 flex items-center gap-2">
+    <i data-feather="search" class="w-5 h-5"></i>
+    Start Scanning
+</button>
+          <button class="border-2 border-green-600 text-green-600 px-8 py-4 rounded-full hover:bg-green-50">
+            Learn More
+          </button>
+        </div>
+      </div>
+      <div class="flex-1 relative flex items-end">
+  <div class="absolute -top-8 -left-8 w-32 h-32 bg-green-100 rounded-full opacity-50"></div>
+  <div class="absolute -bottom-8 -right-8 w-32 h-32 bg-green-100 rounded-full opacity-50"></div>
+
+<img src="{{ url_for('static', filename='images/lbslogo.jpg') }}" alt="Food label scanning demo" class="rounded-2xl w-3/4 ml-auto" />
+
+</div>
+  </header>
+
+  <!-- Features Section -->
+  <section class="container mx-auto px-4 py-16 relative">
+    <div class="absolute top-1/2 left-0 w-96 h-96 bg-green-50 rounded-full -translate-x-1/2 opacity-30 blur-3xl"></div>
+    <h3 class="text-3xl font-bold text-center mb-4">Discover Our Features</h3>
+    <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+      Empowering you with smart tools to understand what's in your food and make better choices.
+    </p>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div class="bg-white p-8 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-full translate-x-16 -translate-y-16 group-hover:scale-150 transition-transform duration-500"></div>
+        <div class="relative">
+          <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
+            <i data-feather="search" class="w-8 h-8 text-green-600"></i>
+          </div>
+          <h4 class="text-xl font-semibold mb-2 text-gray-800">Smart Label Scanner</h4>
+          <p class="text-gray-600">Instantly decode food labels with our advanced OCR technology. Get detailed insights in seconds!</p>
+        </div>
+      </div>
+
+      <div class="bg-white p-8 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-full translate-x-16 -translate-y-16 group-hover:scale-150 transition-transform duration-500"></div>
+        <div class="relative">
+          <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
+            <i data-feather="cpu" class="w-8 h-8 text-green-600"></i>
+          </div>
+          <h4 class="text-xl font-semibold mb-2 text-gray-800">AI-Powered Analysis</h4>
+          <p class="text-gray-600">Our smart AI breaks down complex ingredients and provides easy-to-understand health insights.</p>
+        </div>
+      </div>
+
+      <div class="bg-white p-8 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-full translate-x-16 -translate-y-16 group-hover:scale-150 transition-transform duration-500"></div>
+        <div class="relative">
+          <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
+            <i data-feather="database" class="w-8 h-8 text-green-600"></i>
+          </div>
+          <h4 class="text-xl font-semibold mb-2 text-gray-800">Rich Food Database</h4>
+          <p class="text-gray-600">Access comprehensive nutritional data from USDA and global food databases.</p>
+        </div>
+      </div>
+
+      <div class="bg-white p-8 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-full translate-x-16 -translate-y-16 group-hover:scale-150 transition-transform duration-500"></div>
+        <div class="relative">
+          <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
+            <i data-feather="leaf" class="w-8 h-8 text-green-600"></i>
+          </div>
+          <h4 class="text-xl font-semibold mb-2 text-gray-800">Dietary Lifestyle Support</h4>
+          <p class="text-gray-600">Perfect for vegan, keto, gluten-free, and other dietary preferences.</p>
+        </div>
+      </div>
+
+      <div class="bg-white p-8 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-full translate-x-16 -translate-y-16 group-hover:scale-150 transition-transform duration-500"></div>
+        <div class="relative">
+          <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
+            <i data-feather="award" class="w-8 h-8 text-green-600"></i>
+          </div>
+          <h4 class="text-xl font-semibold mb-2 text-gray-800">Safety First</h4>
+          <p class="text-gray-600">Verify compliance with FSSAI, FDA, and international food safety standards.</p>
+        </div>
+      </div>
+
+      <div class="bg-white p-8 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-full translate-x-16 -translate-y-16 group-hover:scale-150 transition-transform duration-500"></div>
+        <div class="relative">
+          <div class="mb-4 transform group-hover:scale-110 transition-transform duration-300">
+            <i data-feather="user-check" class="w-8 h-8 text-green-600"></i>
+          </div>
+          <h4 class="text-xl font-semibold mb-2 text-gray-800">Personalized Guide</h4>
+          <p class="text-gray-600">Get tailored recommendations based on your dietary needs and preferences.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Barcode Analyzer Section -->
+  <section class="container mx-auto px-4 py-16 bg-green-50 rounded-3xl my-16">
+    <div class="flex flex-col md:flex-row items-center gap-12">
+      <div class="flex-1">
+        <h3 class="text-3xl font-bold mb-6">Instant Barcode Analysis</h3>
+        <p class="text-lg text-gray-600 mb-8">
+          No more googling product information! Our barcode scanner gives you instant access to:
+        </p>
+        <ul class="space-y-4">
+          <li class="flex items-start gap-3">
+            <i data-feather="check-circle" class="w-6 h-6 text-green-600 mt-1"></i>
+            <span>🟢Comprehensive nutritional breakdown</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <i data-feather="check-circle" class="w-6 h-6 text-green-600 mt-1"></i>
+            <span>🟢Allergen alerts and warnings</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <i data-feather="check-circle" class="w-6 h-6 text-green-600 mt-1"></i>
+            <span>🟢Healthier alternative suggestions</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <i data-feather="check-circle" class="w-6 h-6 text-green-600 mt-1"></i>
+            <span>🟢User reviews and ratings</span>
+          </li>
+        </ul>
+        <button id="startBarcode" class="mt-8 bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 shadow-lg flex items-center gap-2">
+    <i data-feather="camera" class="w-5 h-5"></i>
+    Try Barcode Analyzer
+</button>
+      </div>
+      <div class="flex-1">
+        <div class="bg-white p-6 rounded-3xl shadow-xl">
+          <!-- Integrated SVG Barcode Scanner Animation -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" class="w-full h-full">
+            <!-- Background -->
+            <defs>
+              <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#f0fff4" />
+                <stop offset="100%" stop-color="#c6f6d5" />
+              </linearGradient>
+
+              <!-- Scanning effect gradient -->
+              <linearGradient id="scanGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="rgba(72, 187, 120, 0)" />
+                <stop offset="50%" stop-color="rgba(72, 187, 120, 0.7)" />
+                <stop offset="100%" stop-color="rgba(72, 187, 120, 0)" />
+              </linearGradient>
+
+              <!-- Nutrition box gradient -->
+              <linearGradient id="nutritionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ffffff" />
+                <stop offset="100%" stop-color="#f0f0f0" />
+              </linearGradient>
+            </defs>
+
+            <!-- Main background -->
+            <rect width="800" height="600" fill="url(#bgGradient)" rx="20" ry="20" />
+
+            <!-- Food package -->
+            <rect x="170" y="120" width="240" height="360" rx="10" ry="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" />
+
+            <!-- Package label area -->
+            <rect x="190" y="150" width="200" height="250" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
+
+            <!-- Barcode on package -->
+            <g transform="translate(215, 420)">
+              <rect x="0" y="0" width="150" height="40" fill="#ffffff" />
+              <rect x="10" y="5" width="2" height="30" fill="#000000" />
+              <rect x="15" y="5" width="1" height="30" fill="#000000" />
+              <rect x="20" y="5" width="3" height="30" fill="#000000" />
+              <rect x="25" y="5" width="2" height="30" fill="#000000" />
+              <rect x="32" y="5" width="1" height="30" fill="#000000" />
+              <rect x="35" y="5" width="4" height="30" fill="#000000" />
+              <rect x="42" y="5" width="2" height="30" fill="#000000" />
+              <rect x="47" y="5" width="3" height="30" fill="#000000" />
+              <rect x="53" y="5" width="1" height="30" fill="#000000" />
+              <rect x="58" y="5" width="2" height="30" fill="#000000" />
+              <rect x="64" y="5" width="4" height="30" fill="#000000" />
+              <rect x="70" y="5" width="1" height="30" fill="#000000" />
+              <rect x="75" y="5" width="3" height="30" fill="#000000" />
+              <rect x="81" y="5" width="2" height="30" fill="#000000" />
+              <rect x="86" y="5" width="1" height="30" fill="#000000" />
+              <rect x="90" y="5" width="3" height="30" fill="#000000" />
+              <rect x="96" y="5" width="2" height="30" fill="#000000" />
+              <rect x="101" y="5" width="4" height="30" fill="#000000" />
+              <rect x="108" y="5" width="1" height="30" fill="#000000" />
+              <rect x="112" y="5" width="2" height="30" fill="#000000" />
+              <rect x="118" y="5" width="3" height="30" fill="#000000" />
+              <rect x="124" y="5" width="1" height="30" fill="#000000" />
+              <rect x="128" y="5" width="2" height="30" fill="#000000" />
+              <rect x="135" y="5" width="3" height="30" fill="#000000" />
+            </g>
+
+            <!-- Scanner effect -->
+            <g>
+              <rect x="150" y="100" width="280" height="400" rx="15" ry="15" fill="none" stroke="#38a169" stroke-width="4" stroke-dasharray="15,10" />
+              <rect id="scanLine" x="150" y="240" width="280" height="50" fill="url(#scanGradient)" class="scan-line">
+                <animate attributeName="y" from="100" to="450" dur="2s" repeatCount="indefinite" />
+              </rect>
+            </g>
+
+            <!-- Digital interface elements -->
+            <g transform="translate(480, 150)">
+              <!-- Main display panel -->
+              <rect x="0" y="0" width="250" height="300" rx="15" ry="15" fill="#ffffff" stroke="#e2e8f0" stroke-width="3" filter="drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.1))" />
+
+              <!-- Header -->
+              <rect x="0" y="0" width="250" height="50" rx="15" ry="15" fill="#38a169" />
+              <text x="20" y="32" font-family="Arial" font-size="18" font-weight="bold" fill="#ffffff">Nutrition Analysis</text>
+
+              <!-- Nutrition facts box -->
+              <rect x="15" y="65" width="220" height="220" rx="8" ry="8" fill="url(#nutritionGradient)" stroke="#e2e8f0" stroke-width="1" />
+
+              <!-- Nutrition content -->
+              <text x="25" y="90" font-family="Arial" font-size="14" font-weight="bold" fill="#2d3748">Calories: 240</text>
+              <rect x="25" y="100" width="200" height="1" fill="#e2e8f0" />
+
+              <text x="25" y="125" font-family="Arial" font-size="14" fill="#2d3748">Total Fat: 12g</text>
+              <rect x="150" y="118" width="60" height="5" rx="2.5" ry="2.5" fill="#d1fae5" />
+              <rect x="150" y="118" width="20" height="5" rx="2.5" ry="2.5" fill="#38a169" />
+
+              <text x="25" y="150" font-family="Arial" font-size="14" fill="#2d3748">Sodium: 430mg</text>
+              <rect x="150" y="143" width="60" height="5" rx="2.5" ry="2.5" fill="#d1fae5" />
+              <rect x="150" y="143" width="40" height="5" rx="2.5" ry="2.5" fill="#f59e0b" />
+
+              <text x="25" y="175" font-family="Arial" font-size="14" fill="#2d3748">Carbs: 30g</text>
+              <rect x="150" y="168" width="60" height="5" rx="2.5" ry="2.5" fill="#d1fae5" />
+              <rect x="150" y="168" width="35" height="5" rx="2.5" ry="2.5" fill="#38a169" />
+
+              <text x="25" y="200" font-family="Arial" font-size="14" fill="#2d3748">Protein: 5g</text>
+              <rect x="150" y="193" width="60" height="5" rx="2.5" ry="2.5" fill="#d1fae5" />
+              <rect x="150" y="193" width="15" height="5" rx="2.5" ry="2.5" fill="#38a169" />
+
+              <text x="25" y="225" font-family="Arial" font-size="14" fill="#2d3748">Sugar: 12g</text>
+              <rect x="150" y="218" width="60" height="5" rx="2.5" ry="2.5" fill="#d1fae5" />
+              <rect x="150" y="218" width="45" height="5" rx="2.5" ry="2.5" fill="#e53e3e" />
+
+              <text x="25" y="250" font-family="Arial" font-size="14" fill="#2d3748">Fiber: 3g</text>
+              <rect x="150" y="243" width="60" height="5" rx="2.5" ry="2.5" fill="#d1fae5" />
+              <rect x="150" y="243" width="25" height="5" rx="2.5" ry="2.5" fill="#38a169" />
+
+              <text x="25" y="275" font-family="Arial" font-size="12" fill="#718096">Health Score: B+</text>
+            </g>
+
+            <!-- Connect lines -->
+            <g stroke="#38a169" stroke-width="2" stroke-dasharray="5,5" fill="none">
+              <path d="M 290,420 C 350,420 400,300 480,300" />
+            </g>
+
+            <!-- Magnifying circles -->
+            <circle cx="350" y="420" r="25" fill="#ffffff" stroke="#38a169" stroke-width="2" opacity="0.8" />
+            <circle cx="350" y="420" r="20" fill="none" stroke="#38a169" stroke-width="1" />
+            <line x1="340" y1="410" x2="360" y2="430" stroke="#38a169" stroke-width="1.5" />
+            <line x1="340" y1="430" x2="360" y2="410" stroke="#38a169" stroke-width="1.5" />
+
+            <!-- Moving data particles -->
+            <g>
+              <circle cx="320" cy="420" r="3" fill="#38a169">
+                <animate attributeName="cx" from="320" to="480" dur="1.5s" repeatCount="indefinite" />
+                <animate attributeName="cy" from="420" to="300" dur="1.5s" repeatCount="indefinite" />
+                <animate attributeName="opacity" from="1" to="0" dur="1.5s" repeatCount="indefinite" />
+              </circle>
+              <circle cx="320" cy="420" r="2" fill="#38a169">
+                <animate attributeName="cx" from="320" to="480" dur="1.8s" begin="0.2s" repeatCount="indefinite" />
+                <animate attributeName="cy" from="420" to="300" dur="1.8s" begin="0.2s" repeatCount="indefinite" />
+                <animate attributeName="opacity" from="1" to="0" dur="1.8s" begin="0.2s" repeatCount="indefinite" />
+              </circle>
+              <circle cx="320" cy="420" r="4" fill="#38a169">
+                <animate attributeName="cx" from="320" to="480" dur="1.2s" begin="0.4s" repeatCount="indefinite" />
+                <animate attributeName="cy" from="420" to="300" dur="1.2s" begin="0.4s" repeatCount="indefinite" />
+                <animate attributeName="opacity" from="1" to="0" dur="1.2s" begin="0.4s" repeatCount="indefinite" />
+              </circle>
+            </g>
+
+            <!-- Title -->
+            <text x="400" y="80" font-family="Arial" font-size="24" font-weight="bold" text-anchor="middle" fill="#2d3748">Barcode Analysis Technology</text>
+
+            <!-- Checkmark badges -->
+            <g transform="translate(550, 460)">
+              <circle cx="0" cy="0" r="25" fill="#d1fae5" />
+              <path d="M -10,0 L -3,7 L 10,-6" stroke="#38a169" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+              <text x="40" y="5" font-family="Arial" font-size="14" font-weight="bold" fill="#2d3748">Instant Analysis</text>
+            </g>
+
+            <g transform="translate(550, 520)">
+              <circle cx="0" cy="0" r="25" fill="#d1fae5" />
+              <path d="M -10,0 L -3,7 L 10,-6" stroke="#38a169" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+              <text x="40" y="5" font-family="Arial" font-size="14" font-weight="bold" fill="#2d3748">Health Insights</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NutriChatbot Section -->
+  <section class="container mx-auto px-4 py-16 bg-green-50 rounded-3xl my-16">
+    <div class="flex flex-col md:flex-row items-center gap-12">
+      <div class="flex-1">
+        <h3 class="text-3xl font-bold mb-6">Meet NutriChatbot - Your Personal Nutrition Assistant</h3>
+        <p class="text-lg text-gray-600 mb-8">
+          Ask questions about ingredients, allergies, or dietary concerns. Our advanced AI chatbot provides personalized guidance 24/7.
+        </p>
+        <ul class="space-y-4">
+          <li class="flex items-start gap-3">
+            <i data-feather="message-circle" class="w-6 h-6 text-green-600 mt-1"></i>
+            <span>🟢Get instant answers about food ingredients</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <i data-feather="alert-circle" class="w-6 h-6 text-green-600 mt-1"></i>
+            <span>🟢Identify potential allergens in your food</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <i data-feather="thumbs-up" class="w-6 h-6 text-green-600 mt-1"></i>
+            <span>🟢Receive healthier food alternatives</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <i data-feather="info" class="w-6 h-6 text-green-600 mt-1"></i>
+            <span>🟢Learn about nutrition facts and food guidelines</span>
+          </li>
+        </ul>
+        <button id="startChatbot" class="mt-8 bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 shadow-lg flex items-center gap-2">
+    <i data-feather="message-square" class="w-5 h-5"></i>
+    Chat with NutriBot
+</button>
+      </div>
+      <div class="flex-1">
+        <div class="bg-white p-6 rounded-3xl shadow-xl">
+          <div class="bg-gray-100 p-4 rounded-t-xl">
+            <h4 class="font-semibold text-center">NutriChatbot</h4>
+          </div>
+          <div class="chatbot-popup p-4 border border-gray-100 h-80">
+            <div class="flex items-start gap-2 mb-4">
+              <div class="bg-green-100 p-3 rounded-lg rounded-tl-none max-w-xs">
+                <p class="text-sm">Hi there! I'm NutriBot, your personal nutrition assistant. How can I help you today?</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-2 mb-4 justify-end">
+              <div class="bg-gray-100 p-3 rounded-lg rounded-tr-none max-w-xs">
+                <p class="text-sm">Is maltodextrin bad for me?</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-2 mb-4">
+              <div class="bg-green-100 p-3 rounded-lg rounded-tl-none max-w-xs">
+                <p class="text-sm">Maltodextrin is a common food additive used as a thickener or filler. It's generally safe for most people, but it has a high glycemic index, meaning it can cause spikes in blood sugar.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-2 mb-4">
+              <div class="bg-green-100 p-3 rounded-lg rounded-tl-none max-w-xs">
+                <p class="text-sm">If you have diabetes or are watching your blood sugar levels, you might want to consume it in moderation. Would you like to know about healthier alternatives?</p>
+              </div>
+            </div>
+          </div>
+          <div class="p-4 border-t border-gray-100">
+            <div class="flex gap-2">
+              <input type="text" placeholder="Ask about any ingredient or food..." class="flex-1 px-4 py-2 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500">
+              <button class="bg-green-600 text-white p-2 rounded-full hover:bg-green-700">
+                <i data-feather="send" class="w-5 h-5"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+    <!-- Medicine Analyzer Section -->
+  <section class="container mx-auto px-4 py-16 bg-white rounded-3xl my-16">
+    <div class="flex flex-col md:flex-row items-center gap-12">
+      <div class="flex-1">
+        <h3 class="text-3xl font-bold mb-6">Medicine Scanner & Education</h3>
+        <p class="text-lg text-gray-600 mb-6">
+          Not sure what a medicine does or how it works? Our AI-powered Medicine Scanner helps you
+          understand medicines in simple language – for educational purposes only.
+        </p>
+        <ul class="space-y-4">
+          <li class="flex items-start gap-3">
+            <i data-feather="activity" class="w-6 h-6 text-green-600 mt-1"></i>
+            <span>🟢 Scan or enter medicine details and get a clear educational explanation.</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <i data-feather="shield" class="w-6 h-6 text-green-600 mt-1"></i>
+            <span>🟢 Learn about common uses, side effects, and precautions (non-prescriptive).</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <i data-feather="book-open" class="w-6 h-6 text-green-600 mt-1"></i>
+            <span>🟢 Understand medical terms in simple, friendly language.</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <i data-feather="alert-triangle" class="w-6 h-6 text-green-600 mt-1"></i>
+            <span>🟢 Built-in safety reminder: always consult doctors for real medical decisions.</span>
+          </li>
+        </ul>
+
+        <button id="startMedicine"
+          class="mt-8 bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 shadow-lg flex items-center gap-2">
+          <i data-feather="tablet" class="w-5 h-5"></i>
+          Open Medicine Analyzer
+        </button>
+      </div>
+
+      <div class="flex-1">
+        <div class="bg-green-50 p-6 rounded-3xl shadow-xl border border-green-100">
+          <h4 class="text-xl font-semibold mb-4 text-green-800">What this tool does</h4>
+          <p class="text-gray-700 mb-4 text-sm leading-relaxed">
+            This module explains medicines in simple educational terms. It does <strong>not</strong> prescribe,
+            diagnose, or tell you what you personally should take. It’s like a smart textbook, not a doctor.
+          </p>
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div class="bg-white rounded-2xl p-3 border border-green-100">
+              <p class="font-semibold text-gray-800 mb-1">✅ Good for:</p>
+              <ul class="list-disc list-inside text-gray-600">
+                <li>Understanding medicine names</li>
+                <li>Learning common uses</li>
+                <li>Knowing general side effects</li>
+              </ul>
+            </div>
+            <div class="bg-white rounded-2xl p-3 border border-red-100">
+              <p class="font-semibold text-gray-800 mb-1">🚫 Not for:</p>
+              <ul class="list-disc list-inside text-gray-600">
+                <li>Emergencies</li>
+                <li>Personal dosage advice</li>
+                <li>Replacing a doctor</li>
+              </ul>
+            </div>
+          </div>
+          <p class="mt-4 text-xs text-gray-500">
+            Always consult a registered medical professional for your specific health condition.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Random Food Facts -->
+<section class="container mx-auto px-6 py-20">
+  <h3 class="text-4xl font-bold text-center mb-14">Did You Know?</h3>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+
+    <div class="food-fact-card bg-white shadow-lg rounded-lg overflow-hidden">
+      <div class="h-44 bg-yellow-100 flex items-center justify-center">
+        <i data-feather="coffee" class="w-16 h-16 text-yellow-600"></i>
+      </div>
+      <div class="p-6">
+        <h4 class="text-2xl font-semibold mb-3">Coffee Facts</h4>
+        <p class="text-gray-700">It takes about 37 coffee beans to make a single shot of espresso. The average coffee tree produces 10 pounds of coffee annually.</p>
+      </div>
+    </div>
+
+    <div class="food-fact-card bg-white shadow-lg rounded-lg overflow-hidden">
+      <div class="h-44 bg-red-100 flex items-center justify-center">
+        <i data-feather="thermometer" class="w-16 h-16 text-red-600"></i>
+      </div>
+      <div class="p-6">
+        <h4 class="text-2xl font-semibold mb-3">Spicy Science</h4>
+        <p class="text-gray-700">The spicy sensation from chili peppers is not a taste but actually pain. Capsaicin binds to pain receptors, not taste buds!</p>
+      </div>
+    </div>
+
+    <div class="food-fact-card bg-white shadow-lg rounded-lg overflow-hidden">
+      <div class="h-44 bg-blue-100 flex items-center justify-center">
+        <i data-feather="droplet" class="w-16 h-16 text-blue-600"></i>
+      </div>
+      <div class="p-6">
+        <h4 class="text-2xl font-semibold mb-3">Hydration Facts</h4>
+        <p class="text-gray-700">About 20% of our daily water intake comes from solid foods. Eating water-rich fruits and vegetables helps with hydration!</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="text-center mt-16">
+    <a href="https://www.eatthis.com/mind-blowing-food-facts/" target="_blank">
+        <button class="bg-green-600 text-white px-8 py-3 rounded-full hover:bg-green-700 shadow-md flex items-center gap-3 mx-auto">
+            <i data-feather="edit-3" class="w-5 h-5"></i>
+            Learn More Facts
+        </button>
+    </a>
+</div>
+
+</section>
+
+<!-- Video Recommendations -->
+<section class="container mx-auto px-4 py-16 bg-green-50 rounded-3xl my-16">
+  <h3 class="text-3xl font-bold text-center mb-12">Recommended Healthy Living Videos</h3>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+    <div class="video-recommendation shadow-md">
+      <a href="https://youtu.be/hbUxV19x3Bw?si=aJYqQS_Wxl-pf8AG" target="_blank" class="block relative">
+        <img src="https://img.youtube.com/vi/hbUxV19x3Bw/0.jpg" alt="Food label tutorial" class="w-full h-48 object-cover"/>
+        <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+          <i data-feather="play-circle" class="w-16 h-16 text-white"></i>
+        </div>
+      </a>
+      <div class="p-4">
+        <h4 class="text-lg font-semibold">How to Read Food Labels Like a Pro</h4>
+        <p class="text-gray-600 text-sm mt-1">18:24 • 245K views</p>
+      </div>
+    </div>
+
+    <div class="video-recommendation shadow-md">
+      <a href="https://youtu.be/gQ13c3lznFM?si=EfUGe8vEZejwks68" target="_blank" class="block relative">
+        <img src="https://img.youtube.com/vi/gQ13c3lznFM/0.jpg" alt="Healthy meal prep" class="w-full h-48 object-cover"/>
+        <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+          <i data-feather="play-circle" class="w-16 h-16 text-white"></i>
+        </div>
+      </a>
+      <div class="p-4">
+        <h4 class="text-lg font-semibold">5-Day Healthy Meal Prep for Busy Professionals</h4>
+        <p class="text-gray-600 text-sm mt-1">24:30 • 1.2M views</p>
+      </div>
+    </div>
+
+    <div class="video-recommendation shadow-md">
+      <a href="https://youtu.be/78_cilGEC9Y?si=o5BByfHGAFjIYGDF" target="_blank" class="block relative">
+        <img src="https://img.youtube.com/vi/78_cilGEC9Y/0.jpg" alt="Nutrition myths" class="w-full h-48 object-cover"/>
+        <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+          <i data-feather="play-circle" class="w-16 h-16 text-white"></i>
+        </div>
+      </a>
+      <div class="p-4">
+        <h4 class="text-lg font-semibold">10 Nutrition Myths Debunked by Science</h4>
+        <p class="text-gray-600 text-sm mt-1">15:45 • 890K views</p>
+      </div>
+    </div>
+
+  </div>
+  <div class="text-center mt-12">
+    <a href="https://www.youtube.com/results?search_query=food+labeling" target="_blank"
+       class="text-white border border-green-600 bg-green-600 px-5 py-2 text-sm rounded-2xl hover:bg-green-700">
+      View More Videos
+    </a>
+  </div>
+</section>
+
+
+  <!-- CTA Section -->
+  <section class="bg-gradient-to-r from-green-600 to-green-500 text-white py-20 relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-96 h-96 bg-green-400 rounded-full translate-x-1/2 -translate-y-1/2 opacity-30 blur-3xl"></div>
+    <div class="container mx-auto px-4 text-center relative">
+      <h3 class="text-3xl font-bold mb-6">
+        Your Journey to Healthier Eating Starts Here
+      </h3>
+      <p class="text-xl mb-8 max-w-2xl mx-auto">
+        Join thousands of health-conscious individuals who trust Label Padega Sabh for their food choices.
+      </p>
+      <button class="bg-white text-green-600 px-10 py-6 rounded-full text-lg font-semibold hover:bg-green-50 shadow-xl">
+        Download Now
+      </button>
+    </div>
+  </section>
+
+  <!-- JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.29.0/feather.min.js"></script>
+  <script>
+    document.getElementById("startScanning").addEventListener("click", function() {
+    fetch("/start-scanning")
+        .then(response => response.json())
+        .then(data => alert(data.message || data.error))
+        .catch(error => alert("Error: " + error));
+});
+
+document.getElementById("startBarcode").addEventListener("click", function() {
+    fetch("/start-barcode")
+        .then(response => response.json())
+        .then(data => alert(data.message || data.error))
+        .catch(error => alert("Error: " + error));
+});
+
+document.getElementById("startChatbot").addEventListener("click", function() {
+    fetch("/start-chatbot")
+        .then(response => response.json())
+        .then(data => alert(data.message || data.error))
+        .catch(error => alert("Error: " + error));
+});
+
+document.getElementById("startMedicine").addEventListener("click", function() {
+    fetch("/start-medicine")
+        .then(response => response.json())
+        .then(data => alert(data.message || data.error))
+        .catch(error => alert("Error: " + error));
+});
+
+  </script>
+</body>
+</html>
