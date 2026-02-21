@@ -9,7 +9,7 @@ import plotly.express as px
 
 class AppConfig:
     # Default/fallback model; _configure_gemini will try a fallback if unavailable
-    GEMINI_MODEL = "gemini-2.5-flash"
+    GEMINI_MODEL = "gemini-1.5-flash"
     SUPPORTED_IMAGE_TYPES = ["jpg", "jpeg", "png"]
     MAX_IMAGE_SIZE = (800, 800)
 
@@ -276,14 +276,17 @@ class FoodLabelAnalyzerApp:
 
     def analyze_food_image(self, image):
         try:
-            # Convert RGBA to RGB if necessary (JPEG doesn't support alpha channel)
-            if image.mode == 'RGBA':
-                # Create a white background
-                rgb_image = Image.new('RGB', image.size, (255, 255, 255))
-                rgb_image.paste(image, mask=image.split()[3])  # Use alpha channel as mask
-                image = rgb_image
-            elif image.mode != 'RGB':
-                image = image.convert('RGB')
+            # Convert to RGB (JPEG doesn't support alpha channel)
+            if image.mode in ("RGBA", "P"):
+                # Create a white background if it's RGBA/P to maintain visibility
+                background = Image.new("RGB", image.size, (255, 255, 255))
+                if image.mode == "RGBA":
+                    background.paste(image, mask=image.split()[3])
+                else:
+                    background.paste(image)
+                image = background
+            elif image.mode != "RGB":
+                image = image.convert("RGB")
             
             # Resize if image is too large
             max_size = self.config.MAX_IMAGE_SIZE

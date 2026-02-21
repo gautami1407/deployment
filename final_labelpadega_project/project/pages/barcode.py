@@ -613,7 +613,7 @@ class AIAnalyzer:
             Provide a detailed assessment with bullet points. Be honest about limitations in your analysis.
         """
         try:
-            model = genai.GenerativeModel("gemini-2.5-flash")
+            model = genai.GenerativeModel("gemini-1.5-flash")
             response = model.generate_content(prompt)
             result = response.text if response else f"Unable to check {certification_type} certification."
 
@@ -688,7 +688,7 @@ class AIAnalyzer:
         )
 
         try:
-            model = genai.GenerativeModel("gemini-2.5-flash")
+            model = genai.GenerativeModel("gemini-1.5-flash")
             response = model.generate_content(prompt)
             response_text = response.text if response else "Unable to generate environmental analysis."
             rating = self._extract_rating(response_text)
@@ -748,7 +748,7 @@ class AIAnalyzer:
         )
 
         try:
-            model = genai.GenerativeModel("gemini-2.5-flash")
+            model = genai.GenerativeModel("gemini-1.5-flash")
             response = model.generate_content(prompt)
             response_text = response.text if response else "Unable to generate healthier recipes."
 

@@ -25,8 +25,8 @@ class NutriChatConfig:
     USDA_API_KEY = os.environ.get("USDA_API_KEY")
 
     # AI Model Settings
-    GEMINI_MODEL = "gemini-2.5-flash"
-    GEMINI_VISION_MODEL = "gemini-2.5-flash"
+    GEMINI_MODEL = "gemini-1.5-flash"
+    GEMINI_VISION_MODEL = "gemini-1.5-flash"
     MAX_RETRIES = 3
     RETRY_DELAY = 1  # seconds
 
@@ -353,9 +353,10 @@ class NutriChatApp:
 
         col1, col2 = st.columns([4, 1])
         with col1:
-            st.text_input("Type your message:", key="user_input")
+            st.text_input("Type your message:", key="chat_input_widget")
         with col2:
             if st.button("Send", key="send_message"):
+                st.session_state.user_input = st.session_state.chat_input_widget
                 self._handle_chat_input()
 
     def _handle_chat_input(self):
@@ -378,8 +379,8 @@ class NutriChatApp:
             try:
                 response = self.get_ai_response(user_input, context)
                 st.session_state.chat_history.append({"role": "assistant", "content": response})
-                st.session_state.user_input = ""
-                st.experimental_rerun()
+                st.session_state.chat_input_widget = ""
+                st.rerun()
             except Exception as e:
                 self.logger.error(f"Failed to get AI response: {e}")
                 st.error("Failed to get response. Please try again.")
@@ -412,11 +413,16 @@ class NutriChatApp:
     def _analyze_food_image(self, image: Image.Image) -> str:
         """Analyze food image using Gemini Vision API"""
         try:
+            # Convert to RGB if necessary (JPEG doesn't support alpha channel)
+            if image.mode in ("RGBA", "P"):
+                image = image.convert("RGB")
+            elif image.mode != "RGB":
+                image = image.convert("RGB")
+                
             image.thumbnail(self.config.MAX_IMAGE_SIZE)
 
             img_byte_arr = io.BytesIO()
-            image_format = image.format if image.format else 'JPEG'
-            image.save(img_byte_arr, format=image_format)
+            image.save(img_byte_arr, format='JPEG')
             img_bytes = img_byte_arr.getvalue()
 
             model = self.get_gemini_model(self.config.GEMINI_VISION_MODEL)
@@ -428,7 +434,7 @@ class NutriChatApp:
                 4. Nutritional benefits
                 5. Considerations for special diets
                 """,
-                {"mime_type": f"image/{image_format.lower()}", "data": img_bytes}
+                {"mime_type": "image/jpeg", "data": img_bytes}
             ]
 
             response = model.generate_content(prompt)
@@ -458,7 +464,7 @@ class NutriChatApp:
 
         response = self.get_ai_response(question, context)
         st.session_state.chat_history.append({"role": "assistant", "content": response})
-        st.experimental_rerun()
+        st.rerun()
 
     def render_user_dashboard(self):
         """Render user statistics dashboard"""
@@ -608,7 +614,7 @@ class NutriChatApp:
         with col2:
             if st.button("Cancel", key="cancel_clear"):
                 st.session_state.show_clear_confirm = False
-                st.experimental_rerun()
+                st.rerun()
 
     def _clear_history(self):
         """Clears chat history and analysis cache"""
@@ -617,7 +623,7 @@ class NutriChatApp:
         st.session_state.show_clear_confirm = False
         st.success("History cleared successfully")
         time.sleep(1)
-        st.experimental_rerun()
+        st.rerun()
 
     def _export_chat_history(self):
         """Exports the chat history to a JSON file"""

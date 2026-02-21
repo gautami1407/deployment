@@ -5,10 +5,13 @@ import time
 
 app = Flask(__name__)
 
-LABEL_ANALYZER_PATH = r"C:\Users\DELL\Downloads\final_labelpadega_project (2)\final_labelpadega_project\project\pages\finalanalyzerbot.py"
-BARCODE_ANALYZER_PATH = r"C:\Users\DELL\Downloads\final_labelpadega_project (2)\final_labelpadega_project\project\pages\barcode.py"
-CHATBOT_PATH = r"C:\Users\DELL\Downloads\final_labelpadega_project (2)\final_labelpadega_project\project\pages\chatbot.py"
-MEDICINE_ANALYZER_PATH = r"C:\Users\DELL\Downloads\final_labelpadega_project (2)\final_labelpadega_project\project\pages\medicines.py"
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+LABEL_ANALYZER_PATH = os.path.join(BASE_DIR, "pages", "finalanalyzerbot.py")
+BARCODE_ANALYZER_PATH = os.path.join(BASE_DIR, "pages", "barcode.py")
+CHATBOT_PATH = os.path.join(BASE_DIR, "pages", "chatbot.py")
+MEDICINE_ANALYZER_PATH = os.path.join(BASE_DIR, "pages", "medicines.py")
 def start_streamlit(script_path):
     """Runs a Streamlit app and opens it in a browser."""
     subprocess.Popen(["streamlit", "run", script_path], shell=True)

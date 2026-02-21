@@ -102,7 +102,14 @@ def setup_gemini_api() -> bool:
 def optimize_image(image: Image.Image) -> Image.Image:
     """Optimize image for better OCR and API efficiency."""
     try:
-        if image.mode not in ("RGB", "L"):
+        if image.mode in ("RGBA", "P"):
+            background = Image.new("RGB", image.size, (255, 255, 255))
+            if image.mode == "RGBA":
+                background.paste(image, mask=image.split()[3])
+            else:
+                background.paste(image)
+            image = background
+        elif image.mode != "RGB" and image.mode != "L":
             image = image.convert("RGB")
 
         if image.size[0] > CONFIG["max_image_size"][0] or image.size[1] > CONFIG["max_image_size"][1]:
@@ -148,7 +155,7 @@ def detect_emergency_keywords(text: str) -> bool:
 # ====================================
 
 @st.cache_resource(show_spinner=False)
-def get_gemini_model(model_name: str = "gemini-2.5-flash") -> "genai.GenerativeModel":
+def get_gemini_model(model_name: str = "gemini-1.5-flash") -> "genai.GenerativeModel":
     """Return a cached Gemini model instance."""
     return genai.GenerativeModel(model_name)
 
@@ -224,7 +231,7 @@ def analyze_medicine_with_gemini(
     medicine_text: str,
     user_profile: Dict,
     analysis_type: str = "long",
-    model_choice: str = "gemini-2.5-flash",
+    model_choice: str = "gemini-1.5-flash",
 ) -> AnalysisResult:
     """Enhanced medicine analysis with structured output - supports short and long formats."""
     try:
@@ -723,7 +730,7 @@ def render_sidebar(model_choice_key: str = "model_choice"):
             # Model choice (Streamlit manages st.session_state['model_choice'])
             st.radio(
                 "AI Model",
-                ["gemini-2.5-flash", "gemini-2.5-pro"],
+                ["gemini-1.5-flash", "gemini-1.5-pro"],
                 index=0,
                 help="Flash is faster & cheaper; Pro is more powerful.",
                 key=model_choice_key,
