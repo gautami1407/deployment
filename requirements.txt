@@ -8,3 +8,4 @@ streamlit-lottie
 pycountry
 requests
 gunicorn
+python-dotenv
