@@ -32,13 +32,15 @@ class AppConfig:
 
         # 2) Environment variable
         import os
+        from dotenv import load_dotenv
+        load_dotenv()
 
         env_key = os.getenv("GEMINI_API_KEY")
         if env_key:
             return env_key
 
-        # 3) Fallback: key the user provided earlier (OK for local dev)
-        return "AIzaSyB5gEnTHs8PgFcE5HDfuEhAnC9GJ7ofdHs"
+        # 3) No key found
+        return None
 
     # Enhanced configuration
     NUTRITION_THRESHOLDS = {

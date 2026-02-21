@@ -22,8 +22,10 @@ import threading
 # CONFIGURATION
 # ============================================================================
 
-GEMINI_API_KEY = "AIzaSyAeSOUPOB3JyVCqro_rXD5C5sgVo0ohC7Q"
-USDA_API_KEY = "NwTn1c91fQ0I0fKE9rBw0vP48cnesEUWE19hImjX"
+from dotenv import load_dotenv
+load_dotenv()
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+USDA_API_KEY = os.environ.get("USDA_API_KEY")
 genai.configure(api_key=GEMINI_API_KEY)
 
 CACHE_DIR = os.path.join(os.path.expanduser("~"), ".product_analyzer_cache")
@@ -484,7 +486,7 @@ class HealthScorer:
 class AIAnalyzer:
     def __init__(self):
         # Try to use the configured API key
-        api_key = get_api_key("GEMINI_API_KEY", "AIzaSyB5gEnTHs8PgFcE5HDfuEhAnC9GJ7ofdHs")
+        api_key = GEMINI_API_KEY
         if api_key:
             try:
                 genai.configure(api_key=api_key)

@@ -10,6 +10,7 @@ from enum import Enum
 from datetime import datetime
 import json
 from pathlib import Path
+import os
 import random
 import matplotlib.pyplot as plt
 
@@ -18,8 +19,10 @@ class NutriChatConfig:
     """Configuration settings for the NutriChat application"""
 
     # 👉 Replace these with your actual keys (or use st.secrets / env vars)
-    GEMINI_API_KEY = "AIzaSyAeSOUPOB3JyVCqro_rXD5C5sgVo0ohC7Q"
-    USDA_API_KEY = "NwTn1c91fQ0I0fKE9rBw0vP48cnesEUWE19hImjX"
+    from dotenv import load_dotenv
+    load_dotenv()
+    GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+    USDA_API_KEY = os.environ.get("USDA_API_KEY")
 
     # AI Model Settings
     GEMINI_MODEL = "gemini-2.5-flash"

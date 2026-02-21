@@ -3,6 +3,7 @@ from typing import List, Dict, Optional, Tuple
 from PIL import Image
 from datetime import datetime
 from dataclasses import dataclass
+import os
 
 # ====================================
 # IMPORTS & THIRD-PARTY LIBRARIES
@@ -28,7 +29,9 @@ except ImportError:
 # ====================================
 
 # Your API key (OK for local dev, don’t commit this to GitHub)
-GEMINI_API_KEY = "AIzaSyAeSOUPOB3JyVCqro_rXD5C5sgVo0ohC7Q"
+from dotenv import load_dotenv
+load_dotenv()
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
 CONFIG = {
     "max_image_size": (1920, 1920),
