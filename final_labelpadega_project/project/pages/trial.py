@@ -19,10 +19,42 @@ import hashlib
 
 # ─── API Keys ───────────────────────────────────────────────────────────────
 from dotenv import load_dotenv
-load_dotenv()
+
+# Try to find .env in current and parent directories more explicitly
+script_dir = os.path.dirname(os.path.abspath(__file__))
+# Check for .env in current dir, project root or any parent
+dotenv_path = None
+curr_path = script_dir
+while curr_path != os.path.dirname(curr_path): # Stop at root
+    potential_dotenv = os.path.join(curr_path, ".env")
+    if os.path.exists(potential_dotenv):
+        dotenv_path = potential_dotenv
+        break
+    # Also check parent of 'project' or 'pages'
+    curr_path = os.path.dirname(curr_path)
+
+if dotenv_path:
+    load_dotenv(dotenv_path)
+else:
+    load_dotenv() # Fallback to standard behavior
+
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 USDA_API_KEY   = os.environ.get("USDA_API_KEY")
-genai.configure(api_key=GEMINI_API_KEY)
+
+# Validate API Keys
+if not GEMINI_API_KEY:
+    st.error("❌ `GEMINI_API_KEY` not found! Please add it to your `.env` file.")
+    st.info("The `.env` file should be in the project root or the same directory as this script.")
+    st.stop()
+
+if not USDA_API_KEY:
+    st.warning("⚠️ `USDA_API_KEY` not found! USDA search functionality will be limited.")
+
+try:
+    genai.configure(api_key=GEMINI_API_KEY)
+except Exception as e:
+    st.error(f"❌ Failed to configure Gemini API: {e}")
+    st.stop()
 
 # ─── Cache Directory ─────────────────────────────────────────────────────────
 CACHE_DIR = os.path.join(os.path.expanduser("~"), ".product_checker_cache")
@@ -85,6 +117,20 @@ def load_css():
         border-radius: 20px; padding: 24px;
         box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         margin-bottom: 24px;
+    }
+
+    /* Chat styles */
+    .chat-container {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        max-height: 500px;
+        overflow-y: auto;
+        padding: 16px;
+        background: #f8fafc;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 16px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -402,7 +448,6 @@ let lastCode   = null;
 let cooldown   = false;
 let streamRef  = null;
 
-// ── Status helpers ──
 function setStatus(type, text) {
   statusBadge.className = "status-badge " + type;
   statusText.textContent = text;
@@ -410,7 +455,6 @@ function setStatus(type, text) {
   dot.className = "dot" + (type === "scanning" ? " pulse" : "");
 }
 
-// ── Camera ──
 async function startCamera() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -433,12 +477,10 @@ function stopCamera() {
   }
 }
 
-// ── Barcode detector ──
 function isBarcodeSupported() {
   return "BarcodeDetector" in window;
 }
 
-// ── Fetch product from OFF ──
 async function fetchProduct(code) {
   setStatus("scanning", "Fetching product…");
   try {
@@ -460,7 +502,7 @@ async function fetchProduct(code) {
       sendToStreamlit(code);
     } else {
       setStatus("error", "Product not found — try USDA");
-      sendToStreamlit(code);  // still send so Streamlit can try USDA
+      sendToStreamlit(code);
     }
   } catch(e) {
     setStatus("error", "Network error");
@@ -485,12 +527,10 @@ function showProductCard(name, brand, img, ns, nova, eco, code) {
   productResult.classList.add("visible");
 }
 
-// ── PostMessage to Streamlit ──
 function sendToStreamlit(code) {
   window.parent.postMessage({ type: "barcode", code: code }, "*");
 }
 
-// ── Scan loop ──
 async function scanLoop() {
   if (!isBarcodeSupported()) {
     setStatus("error", "BarcodeDetector not supported — use manual entry");
@@ -521,7 +561,6 @@ async function scanLoop() {
           if (code !== lastCode) {
             lastCode = code;
             cooldown = true;
-            // Flash effect
             setStatus("found", "Barcode: " + code);
             fetchProduct(code);
           }
@@ -541,7 +580,6 @@ function stopScanning() {
   setStatus("idle", "Stopped");
 }
 
-// ── Events ──
 scanBtn.addEventListener("click", async () => {
   if (!streamRef) {
     const ok = await startCamera();
@@ -565,7 +603,6 @@ manualInput.addEventListener("keydown", e => {
   }
 });
 
-// Auto-start camera (no scanning yet)
 startCamera();
 </script>
 </body>
@@ -794,7 +831,7 @@ class DataFetcher:
 # ─── AIAnalyzer ──────────────────────────────────────────────────────────────
 class AIAnalyzer:
     def __init__(self):
-        genai.configure(api_key=GEMINI_API_KEY)
+        pass  # genai already configured at module level
 
     def _cache_path(self, atype, pname, bname):
         h = hashlib.md5(f"{pname}_{bname}".encode()).hexdigest()
@@ -815,7 +852,7 @@ class AIAnalyzer:
             with open(p,'w') as f: json.dump({'data':data,'cache_time':time.time()},f)
         except: pass
 
-    def _model(self): return genai.GenerativeModel("gemini-1.5-flash")
+    def _model(self): return genai.GenerativeModel("gemini-2.0-flash")
 
     def _gen(self, prompt):
         try:
@@ -925,15 +962,110 @@ class AIAnalyzer:
         return text
 
 
-# ─── Chat ────────────────────────────────────────────────────────────────────
-def get_gemini_response(question, product_name, product_details):
-    prompt = f"Product: {product_name}\nDetails: {product_details}\n\nUser: {question}\nAI:"
+# ─── Chat Helpers ────────────────────────────────────────────────────────────
+def _format_product_context(product_data):
+    """Build a readable context string from product data for the AI prompt."""
+    details = product_data.get("details", {})
+    parts = []
+    parts.append(f"Product Name: {product_data.get('product_name', 'Unknown')}")
+    parts.append(f"Brand: {product_data.get('brand_name', 'Unknown')}")
+    parts.append(f"Category: {product_data.get('category', 'Unknown')}")
+    parts.append(f"Origin: {product_data.get('origin', 'Unknown')}")
+
+    ingredients = details.get("ingredients", "Not available")
+    if ingredients and ingredients != "Not available":
+        parts.append(f"Ingredients: {ingredients}")
+
+    allergens = product_data.get("allergens", [])
+    if allergens:
+        parts.append(f"Declared Allergens: {', '.join(allergens)}")
+
+    ns = details.get("nutrition_grades", "")
+    if ns:
+        parts.append(f"Nutri-Score: {ns.upper()}")
+
+    nova = details.get("nova_group", "")
+    if nova:
+        parts.append(f"NOVA Group: {nova}")
+
+    eco = details.get("ecoscore_grade", "")
+    if eco:
+        parts.append(f"Eco-Score: {eco.upper()}")
+
+    additives = details.get("additives_tags", [])
+    if additives:
+        parts.append(f"Additives ({len(additives)}): {', '.join(additives[:15])}")
+
+    nutriments = details.get("nutriments", {})
+    if nutriments:
+        nut_parts = []
+        for label, key, unit, mult in [
+            ("Calories", "energy-kcal_100g", "kcal", 1),
+            ("Fat", "fat_100g", "g", 1),
+            ("Sat. Fat", "saturated-fat_100g", "g", 1),
+            ("Carbs", "carbohydrates_100g", "g", 1),
+            ("Sugars", "sugars_100g", "g", 1),
+            ("Fiber", "fiber_100g", "g", 1),
+            ("Protein", "proteins_100g", "g", 1),
+            ("Sodium", "sodium_100g", "mg", 1000),
+        ]:
+            v = nutriments.get(key)
+            if v is not None:
+                nut_parts.append(f"{label}: {v * mult:.1f} {unit}")
+        if nut_parts:
+            parts.append("Nutrition per 100g: " + ", ".join(nut_parts))
+
+    labels = details.get("labels", "")
+    if labels:
+        parts.append(f"Labels/Certifications: {labels}")
+
+    packaging = details.get("packaging", "Not specified")
+    if packaging and packaging != "Not specified":
+        parts.append(f"Packaging: {packaging}")
+
+    traces = details.get("traces", "")
+    if traces:
+        parts.append(f"May contain traces of: {traces}")
+
+    # Limit total context size to avoid exceeding token limits
+    context = "\n".join(parts)
+    if len(context) > 3000:
+        context = context[:3000] + "\n[...truncated]"
+    return context
+
+
+def get_gemini_response(question, product_name, product_context):
+    """Get AI response for a product-related question."""
+    system_instruction = (
+        "You are a knowledgeable product health and safety expert. "
+        "You answer questions about food products based on the product information provided. "
+        "Give clear, accurate, well-structured answers. "
+        "When discussing health, safety, allergens, nutrition, or environmental impact, "
+        "be specific and cite the product's actual data. "
+        "If the information is not available in the product data, say so honestly. "
+        "Keep answers concise but thorough."
+    )
+    prompt = (
+        f"{system_instruction}\n\n"
+        f"--- Product Information ---\n"
+        f"{product_context}\n\n"
+        f"--- User Question ---\n"
+        f"{question}\n\n"
+        f"Please provide a helpful, accurate answer:"
+    )
     try:
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel("gemini-2.0-flash")
         r = model.generate_content(prompt)
-        return r.text.strip() if r else "No response."
+        if r and r.text:
+            return r.text.strip()
+        return "I wasn't able to generate a response. Please try rephrasing your question."
     except Exception as e:
-        return f"Error: {e}"
+        error_msg = str(e)
+        if "quota" in error_msg.lower() or "rate" in error_msg.lower():
+            return "⚠️ API rate limit reached. Please wait a moment and try again."
+        elif "block" in error_msg.lower() or "safety" in error_msg.lower():
+            return "⚠️ The response was blocked by content safety filters. Please rephrase your question."
+        return f"⚠️ Error getting response: {error_msg}"
 
 
 # ─── Display full product info ────────────────────────────────────────────────
@@ -1154,6 +1286,72 @@ def display_product_information(product_data, regulation_db, ai_analyzer):
         st.info("🔜 Commercial healthier alternatives feature coming soon.")
 
 
+# ─── Chat Section (standalone, outside display_product_information) ───────────
+def render_chat_section(product_data):
+    """
+    Renders the chat UI. Must be called OUTSIDE display_product_information
+    so session_state['chat_history'] persists across reruns.
+    """
+    st.divider()
+    st.header("💬 Chat with Product Analyzer")
+
+    product_name = product_data["product_name"]
+    # Build clean, structured context instead of raw dict dump
+    product_context = _format_product_context(product_data)
+
+    # ── Handle pending suggestion FIRST (before rendering chat history) ──
+    # This ensures the response is generated and added to history before display
+    if st.session_state.get("pending_suggestion"):
+        sug = st.session_state.pending_suggestion
+        st.session_state.pending_suggestion = None  # Clear immediately to prevent loop
+
+        with st.spinner(f"Answering: {sug}"):
+            resp = get_gemini_response(sug, product_name, product_context)
+
+        st.session_state.chat_history.append({"user": sug, "ai": resp})
+        # No st.rerun() needed — we just appended to history and it will render below
+
+    # ── Display existing messages ──
+    chat_history = st.session_state.chat_history
+    for chat in chat_history:
+        with st.chat_message("user"):
+            st.write(chat["user"])
+        with st.chat_message("assistant"):
+            st.write(chat["ai"])
+
+    # ── Handle chat input ──
+    user_q = st.chat_input("Ask anything about this product…")
+    if user_q:
+        # Immediately show the user message
+        with st.chat_message("user"):
+            st.write(user_q)
+
+        # Get AI response with spinner
+        with st.chat_message("assistant"):
+            with st.spinner("Thinking…"):
+                resp = get_gemini_response(user_q, product_name, product_context)
+            st.write(resp)
+
+        # Save to history — st.chat_input already triggers a rerun on next submit
+        st.session_state.chat_history.append({"user": user_q, "ai": resp})
+
+    # ── Suggested questions ──
+    with st.expander("💡 Suggested questions"):
+        suggestions = [
+            "Are there any known side effects of this product?",
+            "Is this product suitable for diabetics?",
+            "What certifications does this product have?",
+            "How sustainable is the packaging?",
+            "Can you suggest healthier alternatives?",
+            "Is this product safe for children?",
+        ]
+        for sug in suggestions:
+            btn_key = f"sug_{hashlib.md5((sug + product_name).encode()).hexdigest()[:8]}"
+            if st.button(sug, key=btn_key):
+                st.session_state.pending_suggestion = sug
+                st.rerun()
+
+
 # ─── MAIN ────────────────────────────────────────────────────────────────────
 def main():
     load_css()
@@ -1161,9 +1359,19 @@ def main():
     data_fetcher  = DataFetcher()
     ai_analyzer   = AIAnalyzer()
 
-    # Session state init
-    for k,v in [("product_data",None),("scan_history",[]),("region","United States"),("pending_barcode",None)]:
-        if k not in st.session_state: st.session_state[k] = v
+    # ── IMPORTANT FIX #4: Initialize ALL session state keys at the top, unconditionally ──
+    # This ensures chat_history persists across reruns and is never reset
+    defaults = {
+        "product_data": None,
+        "scan_history": [],
+        "region": "United States",
+        "pending_barcode": None,
+        "chat_history": [],        # Must be here, not inside product block
+        "pending_suggestion": None, # For suggestion button handling
+    }
+    for k, v in defaults.items():
+        if k not in st.session_state:
+            st.session_state[k] = v
 
     # ── Sidebar ──
     with st.sidebar:
@@ -1171,14 +1379,17 @@ def main():
         st.markdown("<h2 class='main-header'>Product Analyzer</h2>", unsafe_allow_html=True)
         countries      = sorted([c.name for c in pycountry.countries])
         default_region = "United States"
-        st.session_state.region = st.selectbox("Your region:", countries, index=countries.index(default_region) if default_region in countries else 0)
+        st.session_state.region = st.selectbox(
+            "Your region:", countries,
+            index=countries.index(default_region) if default_region in countries else 0
+        )
         st.divider()
         st.subheader("Scan History")
         if not st.session_state.scan_history:
             st.info("No products scanned yet.")
         else:
             for idx, item in enumerate(reversed(st.session_state.scan_history[-5:])):
-                c1,c2 = st.columns([1,3])
+                c1, c2 = st.columns([1, 3])
                 with c1:
                     if item.get("image_url"): st.image(item["image_url"], width=45)
                     else: st.write("📦")
@@ -1186,6 +1397,8 @@ def main():
                     st.write(item["product_name"])
                     if st.button("View", key=f"hist_{idx}"):
                         st.session_state.product_data = item
+                        # ── IMPORTANT FIX #5: Clear chat history when switching products ──
+                        st.session_state.chat_history = []
                         st.rerun()
         if st.session_state.scan_history:
             if st.button("Clear History"):
@@ -1199,40 +1412,22 @@ def main():
     # ── SCANNER SECTION ──
     st.markdown("### 📷 Barcode Scanner")
     st.markdown("Use the live scanner below — it auto-detects barcodes and fetches product info instantly.")
-
-    # Render scanner (listens for postMessage from iframe)
     components.html(SCANNER_HTML, height=700, scrolling=False)
 
-    # JavaScript bridge: detect postMessage from the iframe
-    # We use query params as the bridge mechanism
     barcode_from_scan = st.query_params.get("barcode", None)
 
     # ── Manual / Text Search ──
     st.markdown("### 🔎 Manual Search")
     col1, col2 = st.columns([4, 1])
     with col1:
-        query = st.text_input("Enter barcode or product name:", key="manual_search", placeholder="e.g. 737628064502 or Cheerios")
+        query = st.text_input("Enter barcode or product name:", key="manual_search",
+                              placeholder="e.g. 737628064502 or Cheerios")
     with col2:
         search_btn = st.button("Search", use_container_width=True, type="primary")
 
     st.caption("Sample barcodes: `737628064502` (Kettle Chips) · `041196910759` (Cheerios) · `076840100744` (Nature Valley)")
 
-    # JavaScript to intercept postMessage from iframe and push to query params
-    st.markdown("""
-    <script>
-    window.addEventListener("message", function(e) {
-        if (e.data && e.data.type === "barcode") {
-            const url = new URL(window.location.href);
-            url.searchParams.set("barcode", e.data.code);
-            window.history.replaceState({}, "", url.toString());
-            // Trigger Streamlit rerun via a hidden click
-            window.parent.postMessage({type:"streamlit:setQueryParam", key:"barcode", value: e.data.code}, "*");
-        }
-    });
-    </script>
-    """, unsafe_allow_html=True)
-
-    # ── Process barcode from scanner (query param) ──
+    # ── Process barcode ──
     def process_barcode(bc, source="barcode"):
         with st.spinner(f"Fetching product for barcode {bc}…"):
             pname, bname, cat, orig, det, img, alg = data_fetcher.fetch_from_open_food_facts(bc)
@@ -1240,10 +1435,17 @@ def main():
                 with st.spinner("Not found in Open Food Facts — trying USDA…"):
                     pname, bname, cat, orig, det, img, alg = data_fetcher.fetch_from_usda(bc)
             if pname:
-                pd_obj = {"product_name":pname,"brand_name":bname,"category":cat,"origin":orig,"details":det,"image_url":img,"allergens":alg,"barcode":bc}
-                st.session_state.product_data = pd_obj
-                if pd_obj not in st.session_state.scan_history:
-                    st.session_state.scan_history.append(pd_obj)
+                # ── IMPORTANT FIX #6: Use product_obj (not pd_obj) to avoid shadowing pandas 'pd' ──
+                product_obj = {
+                    "product_name": pname, "brand_name": bname, "category": cat,
+                    "origin": orig, "details": det, "image_url": img,
+                    "allergens": alg, "barcode": bc
+                }
+                st.session_state.product_data = product_obj
+                # Clear chat history when a new product is loaded
+                st.session_state.chat_history = []
+                if product_obj not in st.session_state.scan_history:
+                    st.session_state.scan_history.append(product_obj)
             else:
                 st.error(f"No product found for barcode: {bc}")
 
@@ -1261,7 +1463,7 @@ def main():
             if products:
                 st.success(f"Found {len(products)} results for '{query}'")
                 for idx, prod in enumerate(products[:5]):
-                    c1,c2,c3 = st.columns([1,3,1])
+                    c1, c2, c3 = st.columns([1, 3, 1])
                     with c1:
                         if prod.get("image_url"): st.image(prod["image_url"], width=70)
                         else: st.write("📦")
@@ -1276,40 +1478,14 @@ def main():
             else:
                 st.error(f"No products found for '{query}'")
 
-    # ── Display product ──
+    # ── Display product + chat ──
     if st.session_state.product_data:
         st.divider()
-        display_product_information(st.session_state.product_data, regulation_db, ai_analyzer)
-
-        # ── Chat ──
-        st.divider()
-        st.header("💬 Chat with Product Analyzer")
-        if "chat_history" not in st.session_state: st.session_state.chat_history = []
-
-        for chat in st.session_state.chat_history:
-            with st.chat_message("user"):    st.write(chat["user"])
-            with st.chat_message("assistant"): st.write(chat["ai"])
-
-        user_q = st.chat_input("Ask anything about this product…")
-        if user_q:
-            resp = get_gemini_response(user_q, st.session_state.product_data["product_name"], st.session_state.product_data["details"])
-            st.session_state.chat_history.append({"user":user_q,"ai":resp})
-            st.rerun()
-
-        with st.expander("💡 Suggested questions"):
-            suggestions = [
-                "Are there any known side effects of this product?",
-                "Is this product suitable for diabetics?",
-                "What certifications does this product have?",
-                "How sustainable is the packaging?",
-                "Can you suggest healthier alternatives?",
-                "Is this product safe for children?",
-            ]
-            for sug in suggestions:
-                if st.button(sug, key=f"sug_{sug[:20]}"):
-                    resp = get_gemini_response(sug, st.session_state.product_data["product_name"], st.session_state.product_data["details"])
-                    st.session_state.chat_history.append({"user":sug,"ai":resp})
-                    st.rerun()
+        display_product_information(
+            st.session_state.product_data, regulation_db, ai_analyzer
+        )
+        # ── IMPORTANT FIX #7: Call chat OUTSIDE display_product_information ──
+        render_chat_section(st.session_state.product_data)
 
 
 if __name__ == "__main__":
